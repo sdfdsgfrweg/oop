@@ -14,7 +14,7 @@
 
 struct Point
 {
-    const double m_x, m_y;
+    double m_x, m_y;
 
     Point ()
         :    m_x( 0.0 ), m_y( 0.0 )

@@ -57,10 +57,15 @@ public:
 
 	void operator /= (const RationalNumber & _rhs);
 
+	operator double() const;
+
+	friend std::ostream & operator << (std::ostream & _stream, const RationalNumber & _rn);
+
 /*------------------------------------------------------------------*/
 private:
 
 	void simplifing();
+	int greatest(int _lhs, int _rhs);
 
 private:
 	

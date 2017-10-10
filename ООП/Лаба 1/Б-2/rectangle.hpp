@@ -61,57 +61,77 @@ public:
 private:
 
 	Point m_leftUp, m_rightDown;
+
 	int m_width, m_heigth;
 
 /*------------------------------------------------------------------*/
 
 };
 
+/*****************************************************************************/
 
 inline Point Rectangle::getTopLeft() const 
 {
 	return m_leftUp;
 }
 
+/*****************************************************************************/
+
 inline Point Rectangle::getTopRight() const
 {
 	return Point(m_rightDown.m_x, m_leftUp.m_y);
 }
+
+/*****************************************************************************/
 
 inline Point Rectangle::getBottomLeft() const
 {
 	return Point(m_leftUp.m_x, m_rightDown.m_y);
 }
 
+/*****************************************************************************/
+
 inline Point Rectangle::getBottomRight() const
 {
 	return m_rightDown;
 }
+
+/*****************************************************************************/
 
 inline int Rectangle::getWidth() const
 {
 	return m_width;
 }
 
+/*****************************************************************************/
+
 inline int Rectangle::getHeight() const
 {
 	return m_heigth;
 }
+
+/*****************************************************************************/
 
 inline int Rectangle::getPerimeter() const
 {
 	return m_heigth * 2 + m_width * 2;
 }
 
+/*****************************************************************************/
+
 inline int Rectangle::getArea() const
 {
 	return m_heigth * m_width;
 }
 
+/*****************************************************************************/
+
 inline bool Rectangle::operator == (const Rectangle & _r) const
 {
 	return m_leftUp == _r.m_leftUp && m_rightDown == _r.m_rightDown;
 }
+
+/*****************************************************************************/
 
 inline bool Rectangle::operator != (const Rectangle & _r) const
 {

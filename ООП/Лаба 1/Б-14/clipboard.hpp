@@ -72,11 +72,15 @@ private:
 
 };
 
+/*****************************************************************************/
+
 inline Clipboard::DataFormat 
 Clipboard::getCurrentFormat() const
 {
 	return m_currentFormat;
 }
+
+/*****************************************************************************/
 
 inline int Clipboard::getCurrentDataSize() const
 {
@@ -93,10 +97,13 @@ inline int Clipboard::getCurrentDataSize() const
 	}
 }
 
+/*****************************************************************************/
+
 inline int Clipboard::getMaxBufferSize() const
 {
 	return m_dataBufferSize;
 }
+
 /*****************************************************************************/
 
 #endif //  _CLIPBOARD_HPP_

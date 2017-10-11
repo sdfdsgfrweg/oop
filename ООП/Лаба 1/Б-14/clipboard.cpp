@@ -4,12 +4,7 @@
 
 #include <stdexcept>
 #include <cstring>
-#include <iostream>
-
-/*****************************************************************************/
-
-  
-
+ 
 /*****************************************************************************/
 
 Clipboard::Clipboard(int _size)
@@ -20,6 +15,8 @@ Clipboard::Clipboard(int _size)
 	if (_size < 1)
 		throw std::logic_error("Buffer size must be positive");
 }
+
+/*****************************************************************************/
 
 Clipboard::Clipboard(Clipboard & _c)
 {
@@ -32,12 +29,24 @@ Clipboard::Clipboard(Clipboard & _c)
 		memcpy(m_binaryData, _c.m_binaryData, m_currentDataSize);
 }
 
+/*****************************************************************************/
+
 Clipboard & Clipboard::operator=(Clipboard & _c)
 {
 	if (&_c == this) return *this;
 
-	return Clipboard(_c);
+	m_currentDataSize = _c.m_currentDataSize;
+	m_dataBufferSize = _c.m_dataBufferSize;
+	m_currentFormat = _c.m_currentFormat;
+	m_stringBuffer = _c.m_stringBuffer;
+
+	if (m_currentFormat == DataFormat::Format_Binary)
+		memcpy(m_binaryData, _c.m_binaryData, m_currentDataSize);
+
+	return * this;
 }
+
+/*****************************************************************************/
 
 Clipboard::Clipboard(Clipboard && _c)
 {
@@ -52,12 +61,26 @@ Clipboard::Clipboard(Clipboard && _c)
 	_c.clear();
 }
 
+/*****************************************************************************/
+
 Clipboard & Clipboard::operator=(Clipboard && _c)
 {
 	if (&_c == this) return *this;
+	
+	m_currentDataSize = _c.m_currentDataSize;
+	m_dataBufferSize = _c.m_dataBufferSize;
+	m_currentFormat = _c.m_currentFormat;
+	m_stringBuffer = std::move(_c.m_stringBuffer);
 
-	return Clipboard(_c);
+	if (m_currentFormat == DataFormat::Format_Binary)
+		m_binaryData = std::move(_c.m_binaryData);
+
+	_c.clear();
+
+	return * this;
 }
+
+/*****************************************************************************/
 
 void Clipboard::putText(const char * _text)
 {
@@ -70,6 +93,8 @@ void Clipboard::putText(const char * _text)
 	else
 		m_stringBuffer += _text;
 }
+
+/*****************************************************************************/
 
 bool Clipboard::putBinaryData(void * _data, int _size)
 {
@@ -84,12 +109,16 @@ bool Clipboard::putBinaryData(void * _data, int _size)
 	return true;
 }
 
+/*****************************************************************************/
+
 void Clipboard::clear()
 {
 	m_currentFormat = DataFormat::Format_Empty;
 	m_currentDataSize = 0;
 	m_stringBuffer = "";
 }
+
+/*****************************************************************************/
 
 void Clipboard::copyTextTo(char * _text)
 {
@@ -99,6 +128,8 @@ void Clipboard::copyTextTo(char * _text)
 	strcpy(_text, m_stringBuffer.c_str());
 }
 
+/*****************************************************************************/
+
 void Clipboard::copyBinaryDataTo(void * _data)
 {
 	if (!m_currentDataSize || m_currentFormat != DataFormat::Format_Binary)
@@ -107,12 +138,16 @@ void Clipboard::copyBinaryDataTo(void * _data)
 	memcpy(_data, m_binaryData, m_currentDataSize);
 }
 
+/*****************************************************************************/
+
 Clipboard::operator bool() const
 {
 	if ((m_currentDataSize == 0 && m_stringBuffer.empty()) ||
 		m_currentFormat == DataFormat::Format_Empty) return false;
 	return true;
 }
+
+/*****************************************************************************/
 
 void Clipboard::operator+=(const char * _str)
 {
@@ -123,3 +158,5 @@ void Clipboard::operator+=(const char * _str)
 
 	m_stringBuffer += _str;
 }
+
+/*****************************************************************************/

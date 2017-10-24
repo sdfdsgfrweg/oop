@@ -6,108 +6,148 @@
 
 /*****************************************************************************/
 
-Stopwatch::Stopwatch(clock_t _startTime)
-	: m_currentTime(_startTime)
-	, m_isOnPause(true)
-	, m_start(0)
-{}
+Stopwatch::Stopwatch(clock_t _begin)
+{
+	m_begin = 0;
+	m_now = _begin;
+	m_paused = true;
+}
+
+/*****************************************************************************/
 
 void Stopwatch::pause()
 {
-	if (m_isOnPause)
+	if (m_paused)
+	{
 		throw std::logic_error("Stopwatch is paused already");
+	}
 	else
-		m_isOnPause = true;
+	{
+		m_paused = true;
+	}
 
-	//фиксируем время паузы
-	clock_t finishPt = clock();
-	m_currentTime = finishPt;
+	clock_t finish = clock();
+	m_now = finish;
 }
+
+/*****************************************************************************/
 
 void Stopwatch::reset()
 {
-	m_currentTime = 0;
-	m_start = 0;
-	m_isOnPause = true;
+	m_now = 0;
+	m_begin = 0;
+	m_paused = true;
 }
+
+/*****************************************************************************/
 
 void Stopwatch::resume()
 {
-	if (!m_isOnPause)
+	if (!m_paused)
+	{
 		throw std::logic_error("Stopwatch is not paused");
+	}
 	else
-		m_isOnPause = false;
-
-	//если не было пауз, то фиксируем начальное время
-	if (m_currentTime == 0) m_start = clock();
+	{
+		m_paused = false;
+	}
+		
+	if (m_now == 0)
+	{
+		m_begin = clock();
+	}
 }
+
+/*****************************************************************************/
 
 bool Stopwatch::isPaused() const
 {
-	return m_isOnPause;
+	return m_paused;
 }
+
+/*****************************************************************************/
 
 clock_t Stopwatch::getElapsed() const
 {
-	//фиксируем конечное время
-	clock_t finishPt = clock();
-	
-	//если добавляли время сразу
-	if (m_currentTime && !m_start) return m_currentTime;
-	//если была пауза , возобновление без стопа
-	if (m_currentTime && !m_isOnPause) return finishPt - m_currentTime;
-	//если была пауза
-	if (m_currentTime) return m_currentTime - m_start;
-	//если не было засечения
-	if (m_isOnPause && !m_currentTime) return 0;
+	clock_t finish = clock();
 
-	//если не было паузы и время идет
-	return finishPt - m_start;
+	if (m_now && !m_begin)
+	{
+		return m_now;
+	}
+	if (m_now && !m_paused)
+	{
+		return finish - m_now;
+	}
+	if (m_now) 
+	{
+		return m_now - m_begin;
+	}
+	if (m_paused && !m_now)
+	{
+		return 0;
+	}	
+	return finish - m_begin;
 }
 
-Stopwatch Stopwatch::operator +(int  _rhs)
+/*****************************************************************************/
+
+Stopwatch Stopwatch::operator +(int  _s)
 {
-	return Stopwatch(_rhs + m_currentTime);
+	return Stopwatch(_s + m_now);
 }
 
-void Stopwatch::operator +=(int  _rhs)
+/*****************************************************************************/
+
+void Stopwatch::operator +=(int  _s)
 {
-	m_currentTime += _rhs;
+	m_now += _s;
 }
 
-Stopwatch Stopwatch::operator -(int _rhs)
+/*****************************************************************************/
+
+Stopwatch Stopwatch::operator -(int _s)
 {
-	return Stopwatch(m_currentTime - _rhs);
+	return Stopwatch(m_now - _s);
 }
 
-void Stopwatch::operator -=(int _rhs)
+/*****************************************************************************/
+
+void Stopwatch::operator -=(int _s)
 {
-	m_currentTime -= _rhs;
+	m_now -= _s;
 }
+
+/*****************************************************************************/
 
 int Stopwatch::getElapsedMinutes() const
 {
-	clock_t time = getElapsed();
-	return (time - (getElapsedHours() * 3600000)) / 60000;
+	clock_t t = getElapsed();
+	return (t - (getElapsedHours() * H)) / M;
 }
+
+/*****************************************************************************/
 
 int Stopwatch::getElapsedSeconds() const
 {
-	clock_t time = getElapsed();
+	clock_t t = getElapsed();
 
-	return (time - (getElapsedHours() * 3600000) - (getElapsedMinutes() * 60000)) / 1000;
+	return (t - (getElapsedHours() * H) - (getElapsedMinutes() * M)) / S;
 }
+
+/*****************************************************************************/
 
 int Stopwatch::getElapsedHours() const
 {
-	clock_t time = getElapsed();
-	return time / 3600000;
+	clock_t t = getElapsed();
+	return t / H;
 }
+
+/*****************************************************************************/
 
 void Stopwatch::display(std::ostream & _s)
 {
-	_s << getElapsedHours() << ":" << getElapsedMinutes() << ":"
-		<< getElapsedSeconds();
+	_s << getElapsedHours() << ":" << getElapsedMinutes() << ":" << getElapsedSeconds();
 }
 
 /*****************************************************************************/

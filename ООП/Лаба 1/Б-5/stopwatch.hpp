@@ -17,42 +17,30 @@ class Stopwatch
 
 /*-----------------------------------------------------------------*/
 public:
-	Stopwatch(clock_t _startTime = 0);
-
+	Stopwatch(clock_t _begin = 0);
 	~Stopwatch() = default;
-
 	void pause();
-
 	void reset();
-
 	void resume();
-
 	bool isPaused() const;
-
 	void display(std::ostream & _s);
-
 	clock_t getElapsed() const;
-
-	Stopwatch operator +(int _rhs);
-
-	void operator +=(int _rhs);
-
-	Stopwatch operator -(int _rhs);
-
-	void operator -=(int  _rhs);
-
+	Stopwatch operator +(int _s);
+	void operator +=(int _s);
+	Stopwatch operator -(int _s);
+	void operator -=(int  _s);
 	int getElapsedMinutes() const;
-
 	int getElapsedSeconds() const;
-
 	int getElapsedHours() const;
 
 private:
 
-	clock_t m_start;
-	clock_t m_currentTime;
+	const int H = 3600000, M = 60000, S = 1000;
 
-	bool m_isOnPause;
+	clock_t m_begin;
+	clock_t m_now;
+
+	bool m_paused;
 	
 /*------------------------------------------------------------------*/
 

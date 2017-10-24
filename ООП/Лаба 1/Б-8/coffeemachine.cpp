@@ -6,108 +6,114 @@
 
 /*****************************************************************************/
 
-// TODO ...
+CoffeeMachine::CoffeeMachine(int _maxBeansNumber,int _maxWaterLiters,int _maxCoffeeCups)
+{
+	//проверяем входные данные
+	if (_maxBeansNumber < 1 || _maxCoffeeCups < 1 || _maxWaterLiters < 1) throw std::logic_error("Incorrect initial parameters");
+	
+	//инициализируем переменные
+	maxBeansNumber = _maxBeansNumber;
+	maxCoffeeCups = _maxCoffeeCups;
+	maxWaterLiters = _maxWaterLiters;
+	availableBeansNumber = availableWaterLiters = 0;
+	availableCoffeeCups = _maxCoffeeCups;
+}
 
 /*****************************************************************************/
 
-CoffeeMachine::CoffeeMachine(
-	int _maxBeansAmount,
-	int _maxWaterVolume,
-	int _maxCoffeePortions
-)
-	: m_maxBeansAmount(_maxBeansAmount)
-	, m_maxCoffeePortions(_maxCoffeePortions)
-	, m_maxWaterVolume(_maxWaterVolume)
-	, m_currentBeansAmount(0)
-	, m_currentCoffeePortions(_maxCoffeePortions)
-	, m_currentWaterVolume(0)
-{
-	if (m_maxBeansAmount < 1 || m_maxCoffeePortions < 1 || m_maxWaterVolume < 1)
-		throw std::logic_error("Incorrect initial parameters");
-}
-
 int CoffeeMachine::loadBeans()
 {
-	int difference = m_maxBeansAmount - m_currentBeansAmount;
-	m_currentBeansAmount = m_maxBeansAmount;
-	return difference;
+	//получаем разницу и добавляем зерен
+	int diff = maxBeansNumber - availableBeansNumber;
+	availableBeansNumber = maxBeansNumber;
+	return diff;
 }
+
+/*****************************************************************************/
 
 int CoffeeMachine::loadWater()
 {
-	int difference = m_maxWaterVolume - m_currentWaterVolume;
-	m_currentWaterVolume = m_maxWaterVolume;
-	return difference;
+	//получаем разницу и добавляем воды
+	int diff = maxWaterLiters - availableWaterLiters;
+	availableWaterLiters = maxWaterLiters;
+	return diff;
 }
+
+/*****************************************************************************/
 
 void CoffeeMachine::cleanWaste()
 {
-	m_currentCoffeePortions = m_maxCoffeePortions;
+	//очищаем бачек для отходов
+	availableCoffeeCups = maxCoffeeCups;
 }
 
-bool CoffeeMachine::makeCoffee(Recipe _r, Strength _s)
+/*****************************************************************************/
+
+bool CoffeeMachine::makeCoffee(Recipe _coffeeRecipe, Strength _coffeeStrength)
 {
-	if (m_currentCoffeePortions == 0)
-		return false;
-
-	switch (_r)
+	//если нет места для отходов, то возвращаем false
+	if (availableCoffeeCups == 0) return false;
+		
+	switch (_coffeeRecipe)
 	{
+		//проверяем ресурсы для еспрессо
 	case CoffeeMachine::Espresso:
-		if (m_currentWaterVolume - WATER_FOR_ESPRESSO < 0)
-			return false;
-		else
-			m_currentWaterVolume -= WATER_FOR_ESPRESSO;
+		if (availableWaterLiters - WATER_FOR_ESPRESSO < 0) return false;
+		else availableWaterLiters -= WATER_FOR_ESPRESSO;
 		break;
+		//проверяем ресурсы для американо
 	case CoffeeMachine::Americano:
-		if (m_currentWaterVolume - WATER_FOR_AMERICANO < 0)
-			return false;
-		else
-			m_currentWaterVolume -= WATER_FOR_AMERICANO;
+		if (availableWaterLiters - WATER_FOR_AMERICANO < 0) return false;
+		else availableWaterLiters -= WATER_FOR_AMERICANO;
 		break;
 	default:
 		break;
 	}
 
-	switch (_s)
+	switch (_coffeeStrength)
 	{
+		//проверяем кол-во зерен для слабой крепости
 	case CoffeeMachine::Light:
-		if (m_currentBeansAmount - BEANS_FOR_LIGHT < 0)
-			return false;
-		else
-			m_currentBeansAmount -= BEANS_FOR_LIGHT;
+		if (availableBeansNumber - BEANS_FOR_LIGHT < 0) return false;
+		else availableBeansNumber -= BEANS_FOR_LIGHT;
 		break;
+
+		//проверяем кол-во зерен для средней крепости
 	case CoffeeMachine::Medium:
-		if (m_currentBeansAmount - BEANS_FOR_MEDIUM < 0)
-			return false;
-		else
-			m_currentBeansAmount -= BEANS_FOR_MEDIUM;
+		if (availableBeansNumber - BEANS_FOR_MEDIUM < 0) return false;
+		else availableBeansNumber -= BEANS_FOR_MEDIUM;
 		break;
+
+		//проверяем кол-во зерен для сильной крепости
 	case CoffeeMachine::Strong:
-		if (m_currentBeansAmount - BEANS_FOR_STRONG < 0)
-			return false;
-		else
-			m_currentBeansAmount -= BEANS_FOR_STRONG;
+		if (availableBeansNumber - BEANS_FOR_STRONG < 0) return false;
+		else availableBeansNumber -= BEANS_FOR_STRONG;
 		break;
 	default:
 		break;
 	}
 
-	m_currentCoffeePortions--;
-
+	//уменьшаем кол-во возможных чашек кофе
+	availableCoffeeCups--;
 	return true;
 }
+
+/*****************************************************************************/
 
 void CoffeeMachine::washMachine()
 {
-	if (m_currentWaterVolume - WATER_FOR_WASHING > 0)
-		m_currentWaterVolume -= WATER_FOR_WASHING;
-	else
-		m_currentWaterVolume = 0;
+	//проверяем кол-во воды для мытья
+	if (availableWaterLiters - WATER_FOR_WASHING > 0) availableWaterLiters -= WATER_FOR_WASHING;
+	else availableWaterLiters = 0;
 }
+
+/*****************************************************************************/
 
 CoffeeMachine::operator bool () const
 {
-	if (m_currentCoffeePortions <= 0 || m_currentBeansAmount < 12 || m_currentWaterVolume < 200) return false;
-	
+	//проверяем можно ли сделать чашку кофе любого вида и любой крепости
+	if (availableCoffeeCups <= 0 || availableBeansNumber < 12 || availableWaterLiters < 200) return false;
 	return true;
 }
+
+/*****************************************************************************/

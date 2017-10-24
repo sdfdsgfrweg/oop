@@ -24,65 +24,76 @@ public:
 	static const int BEANS_FOR_LIGHT = 4, BEANS_FOR_MEDIUM = 8, BEANS_FOR_STRONG = 12;
 
 public:
+	/*------------------------------------------------------------------*/
 
-	CoffeeMachine(
-		int _maxBeansAmount,
-		int _maxWaterVolume,
-		int _maxCoffeePortions
-	);
+	CoffeeMachine(int _maxBeans,int _maxWater,int _maxCoffee);
+
+	/*------------------------------------------------------------------*/
 
 	~CoffeeMachine() = default;
+	
+	/*------------------------------------------------------------------*/
 
 	int getBeansWeight() const;
+	
+	/*------------------------------------------------------------------*/
 
 	int getWaterVolume() const;
+	
+	/*------------------------------------------------------------------*/
 
 	int getFreeWastePortions() const;
+	
+	/*------------------------------------------------------------------*/
 
 	int loadBeans();
 
+	/*------------------------------------------------------------------*/
+
 	int loadWater();
+
+	/*------------------------------------------------------------------*/
 
 	void cleanWaste();
 
-	bool makeCoffee(Recipe _r, Strength _s);
+	/*------------------------------------------------------------------*/
+
+	bool makeCoffee(Recipe _recipe, Strength _strenght);
+	
+	/*------------------------------------------------------------------*/
 
 	void washMachine();
 
-	operator bool () const;
+	/*------------------------------------------------------------------*/
 
+	operator bool () const;
 /*------------------------------------------------------------------*/
 
 private:
 
-	int m_maxBeansAmount;
-	int m_currentBeansAmount;
+	int availableBeansNumber,
+		maxBeansNumber,
+		availableWaterLiters,
+		maxWaterLiters,
+		availableCoffeeCups,
+		maxCoffeeCups;
 
-	int m_maxWaterVolume;
-	int m_currentWaterVolume;
-
-	int m_maxCoffeePortions;
-	int m_currentCoffeePortions;
 /*------------------------------------------------------------------*/
 
 };
 
-
 inline int CoffeeMachine::getBeansWeight() const
 {
-	return m_currentBeansAmount;
+	return availableBeansNumber;
 }
-
 inline int CoffeeMachine::getWaterVolume() const
 {
-	return m_currentWaterVolume;
+	return availableWaterLiters;
 }
-
 inline int CoffeeMachine::getFreeWastePortions() const
 {
-	return m_currentCoffeePortions;
+	return availableCoffeeCups;
 }
-
 /*****************************************************************************/
 
 #endif //  _COFFEEMACHINE_HPP_

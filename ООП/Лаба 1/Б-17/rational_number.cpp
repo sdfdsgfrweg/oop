@@ -4,226 +4,237 @@
 
 #include <stdexcept>
 
-/*****************************************************************************/
-
-int RationalNumber::greatest(int _lhs, int _rhs)
+//нахождение найменьшего общего делимого
+int RationalNumber::getTheMost(int _left, int _rn)
 {
-	if (_lhs == _rhs) return _lhs;
+	if (_left == _rn) return _left;
 
-	int greatest = _lhs * _rhs;
-	int min = 0;
-	for (int i = greatest; i >= 1; i--)
-		if (i % _lhs == 0 && i % _rhs == 0) min = i;
-	return min;
+	int getTheMost = _left * _rn;
+	int minimum = 0;
+	for (int i = getTheMost; i >= 1; i--)
+		if (i % _left == 0 && i % _rn == 0) minimum = i;
+	return minimum;
 }
 
-/*****************************************************************************/
-
+//конструктор
 RationalNumber::RationalNumber(
-	int _numerator,
-	int _denumerator
+	int _num,
+	int _denom
 )
 {
-	if (_denumerator == 0)
+	if (_denom == 0)
 		throw std::logic_error("Zero denominator");
 
-
-	bool isNegative = false;
+	bool minus = false;
 	
-	if (_denumerator < 0 || _numerator < 0) isNegative = true;
-	if (_denumerator < 0 && _numerator < 0) isNegative = false;
+	if (_denom < 0 || _num < 0)  
+		minus = true;
+	
+	if (_denom < 0 && _num < 0) 
+		minus = false;
 
-	m_numerator = std::abs(_numerator);
-	m_denominator = std::abs(_denumerator);
+	m_num = std::abs(_num);
+	m_denom = std::abs(_denom);
+	
+	int minimum = 1;
+	for (int i = 1; i < m_num + 1; i++)
+		if (m_num % i == 0 && m_denom % i == 0 && i != 1)
+		{
+			minimum = i;
+		}
 
-	simplifing();
+	while (m_num % minimum == 0 && m_denom % minimum == 0)
+	{
+		if (minimum == 1)
+			break;
+		m_num /= minimum;
+		m_denom /= minimum;
+	}
 
-	if (isNegative) m_numerator = -m_numerator;
+	if (minus) m_num = -m_num;
 }
 
-
-/*****************************************************************************/
-
-void RationalNumber::simplifing()
+bool RationalNumber::operator == (const RationalNumber & _rn)
 {
-	int min = 1;
+	return m_num == _rn.m_num && m_denom == _rn.m_denom;
+}
+
+bool RationalNumber::operator != (const RationalNumber & _rn)
+{
+	return !(*this == _rn);
+}
+
+bool RationalNumber::operator >= (const RationalNumber & _rn)
+{
+	double left = (double) *this;
+	double right = (double)_rn;
+
+	return left >= right;
+}
+
+bool RationalNumber::operator <= (const RationalNumber & _rn) 
+{
+	double left = (double) *this;
+	double right = (double)_rn;
+
+	return left <= right;
+}
+
+bool RationalNumber::operator > (const RationalNumber & _rn)
+{
+	double left = (double) *this;
+	double right = (double)_rn;
+
+	return left > right;
+}
+
+bool RationalNumber::operator < (const RationalNumber & _rn)
+{
+	double left = (double) *this;
+	double right = (double)_rn;
+
+	return left < right;
+}
+
+void RationalNumber::operator *= (const RationalNumber & _rn)
+{
+	m_num *= _rn.m_num;
+	m_denom *= _rn.m_denom;
 	
-	for (int i = 1; i < m_numerator + 1; i++)
-		if (m_numerator % i == 0 && m_denominator % i == 0 && i != 1) min = i;
-	
- 	while (m_numerator % min == 0 && m_denominator % min == 0)
+	int minimum = 1;
+	for (int i = 1; i < m_num + 1; i++)
+		if (m_num % i == 0 && m_denom % i == 0 && i != 1)
+		{
+			minimum = i;
+		}
+
+	while (m_num % minimum == 0 && m_denom % minimum == 0)
 	{
-		if (min == 1) return;
-		m_numerator /= min;
-		m_denominator /= min;
+		if (minimum == 1) 
+			break;
+		m_num /= minimum;
+		m_denom /= minimum;
 	}
 }
 
-/*****************************************************************************/
-
-bool RationalNumber::operator == (const RationalNumber & _rhs)
+RationalNumber RationalNumber::operator * (const RationalNumber & _rn)
 {
-	return m_numerator == _rhs.m_numerator && m_denominator == _rhs.m_denominator;
-}
-
-/*****************************************************************************/
-
-bool RationalNumber::operator != (const RationalNumber & _rhs)
-{
-	return !(*this == _rhs);
-}
-
-/*****************************************************************************/
-
-bool RationalNumber::operator >= (const RationalNumber & _rhs)
-{
-	double lhs = (double) *this;
-	double rhs = (double)_rhs;
-
-	return lhs >= rhs;
-}
-
-/*****************************************************************************/
-
-bool RationalNumber::operator <= (const RationalNumber & _rhs) 
-{
-	double lhs = (double) *this;
-	double rhs = (double)_rhs;
-
-	return lhs <= rhs;
-}
-
-/*****************************************************************************/
-
-bool RationalNumber::operator > (const RationalNumber & _rhs)
-{
-	double lhs = (double) *this;
-	double rhs = (double)_rhs;
-
-	return lhs > rhs;
-}
-
-/*****************************************************************************/
-
-bool RationalNumber::operator < (const RationalNumber & _rhs)
-{
-	double lhs = (double) *this;
-	double rhs = (double)_rhs;
-
-	return lhs < rhs;
-}
-
-/*****************************************************************************/
-
-void RationalNumber::operator *= (const RationalNumber & _rhs)
-{
-	m_numerator *= _rhs.m_numerator;
-	m_denominator *= _rhs.m_denominator;
-
-	simplifing();
-}
-
-/*****************************************************************************/
-
-RationalNumber RationalNumber::operator * (const RationalNumber & _rhs)
-{
-	int numerator = m_numerator * _rhs.m_numerator;
-	int denominator = m_denominator * _rhs.m_denominator;
+	int numerator = m_num * _rn.m_num;
+	int denominator = m_denom * _rn.m_denom;
 
 	return RationalNumber(numerator, denominator);
 }
 
-/*****************************************************************************/
-
-RationalNumber RationalNumber::operator + (const RationalNumber & _rhs)
+RationalNumber RationalNumber::operator + (const RationalNumber & _rn)
 {
-	int most = greatest(this->m_denominator, _rhs.m_denominator);
-	int lhs_n = m_numerator * (most / this->m_denominator);
-	int rhs_n = _rhs.m_numerator * (most / _rhs.m_denominator);
+	int most = getTheMost(m_denom, _rn.m_denom);
+	int left_n = m_num * (most / m_denom);
+	int right_n = _rn.m_num * (most / _rn.m_denom);
 
-	return RationalNumber(lhs_n + rhs_n, most);
+	return RationalNumber(left_n + right_n, most);
 }
 
-/*****************************************************************************/
-
-void RationalNumber::operator += (const RationalNumber & _rhs)
+void RationalNumber::operator += (const RationalNumber & _rn)
 {
-	int most = greatest(this->m_denominator, _rhs.m_denominator);
-	int rhs_n = _rhs.m_numerator * (most / _rhs.m_denominator);
+	int most = getTheMost(m_denom, _rn.m_denom);
+	int right_n = _rn.m_num * (most / _rn.m_denom);
 
-	m_numerator *= (most / this->m_denominator);
-	m_numerator += rhs_n;
-	m_denominator = most;
+	m_num *= (most / m_denom);
+	m_num += right_n;
+	m_denom = most;
+	int minimum = 1;
+	for (int i = 1; i < m_num + 1; i++)
+		if (m_num % i == 0 && m_denom % i == 0 && i != 1)
+		{
+			minimum = i;
+		}
 
-	simplifing();
-}
-
-/*****************************************************************************/
-
-void RationalNumber::operator -= (const RationalNumber & _rhs)
-{
-	int most = greatest(this->m_denominator, _rhs.m_denominator);
-	int rhs_n = _rhs.m_numerator * (most / _rhs.m_denominator);
-
-	m_numerator *= (most / this->m_denominator);
-	if (m_numerator - rhs_n == 0)
+	while (m_num % minimum == 0 && m_denom % minimum == 0)
 	{
-		m_denominator = 1;
-		m_numerator = 0;
+		if (minimum == 1)
+			break;
+		m_num /= minimum;
+		m_denom /= minimum;
 	}
-	m_numerator -= rhs_n;
-	m_denominator = most;
-
-	simplifing();
 }
 
-/*****************************************************************************/
-
-RationalNumber RationalNumber::operator - (const RationalNumber & _rhs)
+void RationalNumber::operator -= (const RationalNumber & _rn)
 {
-	int most = greatest(this->m_denominator, _rhs.m_denominator);
-	int lhs_n = m_numerator * (most / this->m_denominator);
-	int rhs_n = _rhs.m_numerator * (most / _rhs.m_denominator);
+	int most = getTheMost(m_denom, _rn.m_denom);
+	int right_n = _rn.m_num * (most / _rn.m_denom);
+
+	m_num *= (most / m_denom);
+	if (m_num - right_n == 0)
+	{
+		m_denom = 1;
+		m_num = 0;
+	}
+	m_num -= right_n;
+	m_denom = most;
+	int minimum = 1;
+	for (int i = 1; i < m_num + 1; i++)
+		if (m_num % i == 0 && m_denom % i == 0 && i != 1)
+		{
+			minimum = i;
+		}
+
+	while (m_num % minimum == 0 && m_denom % minimum == 0)
+	{
+		if (minimum == 1)
+			break;
+		m_num /= minimum;
+		m_denom /= minimum;
+	}
+}
+
+RationalNumber RationalNumber::operator - (const RationalNumber & _rn)
+{
+	int most = getTheMost(m_denom, _rn.m_denom);
+	int left_n = m_num * (most / m_denom);
+	int right_n = _rn.m_num * (most / _rn.m_denom);
 	
-	if (lhs_n - rhs_n == 0) 
+	if (left_n - right_n == 0) 
 		return RationalNumber(0, 1);
-	return RationalNumber(lhs_n - rhs_n, most);
+	return RationalNumber(left_n - right_n, most);
 }
 
-/*****************************************************************************/
-
-RationalNumber RationalNumber::operator / (const RationalNumber & _rhs)
+RationalNumber RationalNumber::operator / (const RationalNumber & _rn)
 {
 
-	int numerator = m_numerator * _rhs.m_denominator;
-	int denominator = m_denominator *_rhs.m_numerator;
+	int numerator = m_num * _rn.m_denom;
+	int denominator = m_denom *_rn.m_num;
 
 	return RationalNumber(numerator, denominator);
 }
 
-/*****************************************************************************/
-
-void RationalNumber::operator /= (const RationalNumber & _rhs)
+void RationalNumber::operator /= (const RationalNumber & _rn)
 {
-	m_numerator *= _rhs.m_denominator;
-	m_denominator *= _rhs.m_numerator;
+	m_num *= _rn.m_denom;
+	m_denom *= _rn.m_num;
 
-	simplifing();
+	int minimum = 1;
+	for (int i = 1; i < m_num + 1; i++)
+		if (m_num % i == 0 && m_denom % i == 0 && i != 1)
+		{
+			minimum = i;
+		}
+
+	while (m_num % minimum == 0 && m_denom % minimum == 0)
+	{
+		if (minimum == 1)
+			break;
+		m_num /= minimum;
+		m_denom /= minimum;
+	}
 }
-
-/*****************************************************************************/
 
 RationalNumber::operator double() const
 {
-	return (double)m_numerator / (double)m_denominator;
+	return (double)m_num / (double)m_denom;
 }
-
-/*****************************************************************************/
 
 std::ostream & operator << (std::ostream & _stream, const RationalNumber & _rn)
 {
-	_stream << _rn.m_numerator << "/" << _rn.m_denominator;
+	_stream << _rn.m_num << "/" << _rn.m_denom;
 	return _stream;
 }
-
-/*****************************************************************************/

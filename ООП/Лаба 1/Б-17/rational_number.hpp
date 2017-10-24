@@ -18,75 +18,46 @@ class RationalNumber
 public:
 
 /*------------------------------------------------------------------*/
-	RationalNumber(
-		int _numerator,
-		int _denumerator
-	);
-
+	RationalNumber(int _num, int _denum);
 	~RationalNumber() = default;
-
 	int getNumerator() const;
-
 	int getDenominator() const;
-
-	bool operator == (const RationalNumber & _rhs);
-
-	bool operator != (const RationalNumber & _rhs);
-
-	bool operator >= (const RationalNumber & _rhs);
-
-	bool operator <= (const RationalNumber & _rhs);
-
-	bool operator > (const RationalNumber & _rhs);
-
-	bool operator < (const RationalNumber & _rhs);
-
-	void operator *= (const RationalNumber & _rhs);
-
-	RationalNumber operator * (const RationalNumber & _rhs);
-
-	RationalNumber operator + (const RationalNumber & _rhs);
-
-	void operator += (const RationalNumber & _rhs);
-
-	void operator -= (const RationalNumber & _rhs);
-
-	RationalNumber operator - (const RationalNumber & _rhs);
-
-	RationalNumber operator / (const RationalNumber & _rhs);
-
-	void operator /= (const RationalNumber & _rhs);
-
+	bool operator == (const RationalNumber & _rn);
+	bool operator != (const RationalNumber & _rn);
+	bool operator >= (const RationalNumber & _rn);
+	bool operator <= (const RationalNumber & _rn);
+	bool operator > (const RationalNumber & _rn);
+	bool operator < (const RationalNumber & _rn);
+	void operator *= (const RationalNumber & _rn);
+	RationalNumber operator * (const RationalNumber & _rn);
+	RationalNumber operator + (const RationalNumber & _rn);
+	void operator += (const RationalNumber & _rn);
+	void operator -= (const RationalNumber & _rn);
+	RationalNumber operator - (const RationalNumber & _rn);
+	RationalNumber operator / (const RationalNumber & _rn);
+	void operator /= (const RationalNumber & _rn);
 	operator double() const;
-
 	friend std::ostream & operator << (std::ostream & _stream, const RationalNumber & _rn);
 
 /*------------------------------------------------------------------*/
-private:
 
-	void simplifing();
-	int greatest(int _lhs, int _rhs);
 
 private:
-	
-	int m_numerator;
-	int m_denominator;
 
+	int getTheMost(int _left, int _rn);
+
+	int m_num;
+	int m_denom;
 };
-
-
-/*****************************************************************************/
 
 inline int RationalNumber::getNumerator() const
 {
-	return m_numerator;
+	return m_num;
 }
-
-/*****************************************************************************/
 
 inline int RationalNumber::getDenominator() const
 {
-	return m_denominator;
+	return m_denom;
 }
 
 

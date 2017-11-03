@@ -504,7 +504,7 @@ DECLARE_OOP_TEST( recipe_2_18_ingredient_get_ingredient_value_by_missing_name )
 
 DECLARE_OOP_TEST( recipe_3_1_ingredient_iterators_recipe_with_empty_ingredients )
 {
-	Recipe r( "name", "description", "author" );
+	const Recipe r( "name", "description", "author" );
 
 	auto it = r.beginIngredients();
 	auto itEnd = r.endIngredients();

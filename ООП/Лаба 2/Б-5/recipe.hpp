@@ -47,11 +47,11 @@ public:
 
 	//------------------------------------------
 
-	typedef std::map<std::string, int>::iterator Iterator;
+	typedef std::map<std::string, int>::const_iterator Iterator;
 
-	Iterator beginIngredients();
+	Iterator beginIngredients() const;
 
-	Iterator endIngredients();
+	Iterator endIngredients() const;
 
 	bool hasIngredient(std::string const & _ingredientName) const;
 
@@ -144,17 +144,17 @@ bool Recipe::operator != (Recipe const & _r) const
 /*****************************************************************************/
 
 inline
-Recipe::Iterator Recipe::beginIngredients()
+Recipe::Iterator Recipe::beginIngredients() const
 {
-	return m_ingredients.begin();
+	return m_ingredients.cbegin();
 }
 
 /*****************************************************************************/
 
 inline
-Recipe::Iterator Recipe::endIngredients()
+Recipe::Iterator Recipe::endIngredients() const
 {
-	return m_ingredients.end();
+	return m_ingredients.cend();
 }
 
 /*****************************************************************************/

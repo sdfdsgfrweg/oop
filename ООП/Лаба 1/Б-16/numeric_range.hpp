@@ -3,12 +3,7 @@
 #ifndef _NUMERIC_RANGE_HPP_
 #define _NUMERIC_RANGE_HPP_
 
-/*****************************************************************************/
-
 #include <iostream>
-
-/*****************************************************************************/
-
 
 class NumericRange
 {
@@ -16,238 +11,177 @@ public:
 
 	class Iterator
 	{
-
-		/*-------------------------------------------------------------*/
-
 	public:
-
-		/*-------------------------------------------------------------*/
-
-		// Явный конструктор
-		explicit Iterator(int _currentPosition);
-
-		// Операторы разыменовывания с целью чтения и записи
+		explicit Iterator(int _currPos);
 		int operator * () const;
-
-		// Операторы сравнения на равенство и неравенство
 		bool operator == (Iterator i) const;
 		bool operator != (Iterator i) const;
-
-		// Операторы префиксного и постфиксного инкремента
 		Iterator & operator ++ ();
 		Iterator operator ++ (int);
-
-		/*-------------------------------------------------------------*/
-
 	private:
-
-		/*-------------------------------------------------------------*/
-
+		int m_currPos; 
 		friend class NumericRange;
-		/*-------------------------------------------------------------*/
-
-		int m_currentPosition;
-
-		/*-------------------------------------------------------------*/
-
 	};
 
-
 /*-----------------------------------------------------------------*/
-
 public:
-
 	NumericRange();
-
-	NumericRange(int _low, int _high);
-
-	NumericRange(std::string const & _str);
-
-	int getLowBound() const;
-
-	int getHighBound() const;
-
-	int getWidth() const;
-
-	bool contains(int _number) const;
-
-	bool intersectsWith(NumericRange const & _nr) const;
-
-	bool includes(NumericRange const & _nr) const;
-
-	bool belongsTo(NumericRange const & _nr) const;
-
-	bool adjacentTo(NumericRange const & _nr) const;
-
-	bool operator ==(NumericRange const & _nr) const;
-
-	bool operator !=(NumericRange const & _nr) const;
-
-	bool operator >=(NumericRange const & _nr) const;
-
-	bool operator <=(NumericRange const & _nr) const;
-
-	bool operator <(NumericRange const & _nr) const;
-
-	bool operator >(NumericRange const & _nr) const;
-
+	NumericRange(int _lBound, int _hBound);
+	NumericRange(std::string const & _s);
 	Iterator begin() const;
-
 	Iterator end() const;
-
-	friend std::ostream & operator << (std::ostream & _s, NumericRange const & _nr);
-
-
-/*------------------------------------------------------------------*/
+	int getLowBound() const;
+	int getHighBound() const;
+	int getWidth() const;
+	bool contains(int _num) const;
+	bool intersectsWith(NumericRange const & _numRange) const;
+	bool includes(NumericRange const & _numRange) const;
+	bool belongsTo(NumericRange const & _numRange) const;
+	bool adjacentTo(NumericRange const & _numRange) const;
+	bool operator ==(NumericRange const & _numRange) const;
+	bool operator !=(NumericRange const & _numRange) const;
+	bool operator >=(NumericRange const & _numRange) const;
+	bool operator <=(NumericRange const & _numRange) const;
+	bool operator <(NumericRange const & _numRange) const;
+	bool operator >(NumericRange const & _numRange) const;
+	friend std::ostream & operator << (std::ostream & _s, NumericRange const & _numRange);
 
 private:
-
 	int m_lowBound, m_highBound;
-	
-
-/*------------------------------------------------------------------*/
-
 };
 
-/*****************************************************************************/
-
-inline
-int NumericRange::getLowBound() const
+inline int NumericRange::getLowBound() const
 {
 	return m_lowBound;
 }
 
-/*****************************************************************************/
+inline bool NumericRange::belongsTo(NumericRange const & _numRange) const
+{
+	if (_numRange.m_lowBound <= m_lowBound && _numRange.m_highBound >= m_highBound)
+		return true;
+	else
+		return false;
+}
 
-inline
-int NumericRange::getHighBound() const
+inline int NumericRange::getHighBound() const
 {
 	return m_highBound;
 }
 
-/*****************************************************************************/
-
-inline
-int NumericRange::getWidth() const
+inline int NumericRange::getWidth() const
 {
 	return m_highBound - m_lowBound + 1;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::contains(int _number) const
+inline bool NumericRange::contains(int _number) const
 {
+	//проверка точки на наличие в данном интервале
 	for (int i = m_lowBound; i < m_highBound + 1; i++)
 		if (i == _number) return true;
 	return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::intersectsWith(NumericRange const & _nr) const
+inline bool NumericRange::operator ==(NumericRange const & _numRange) const
 {
-	if (m_lowBound <= _nr.m_lowBound && m_highBound >= _nr.m_lowBound) return true;
-	
-	if (m_lowBound <= _nr.m_highBound && m_highBound >= _nr.m_highBound) return true;
+	if (_numRange.m_lowBound == m_lowBound && _numRange.m_highBound == m_highBound)
+		return true;
+	else
+		return false;
+}
 
-	if (m_lowBound >= _nr.m_lowBound && m_lowBound <= _nr.m_highBound) return true;
+inline bool NumericRange::intersectsWith(NumericRange const & _numRange) const
+{
+	//проверка на пересечение с другим интервалом
 
-	if (m_highBound >= _nr.m_lowBound && m_highBound <= _nr.m_highBound) return true;
-	
+	if (m_lowBound <= _numRange.m_lowBound && m_highBound >= _numRange.m_lowBound)
+	{
+		return true;
+	}
+
+	if (m_lowBound <= _numRange.m_highBound && m_highBound >= _numRange.m_highBound)
+	{
+		return true;
+	}
+
+	if (m_lowBound >= _numRange.m_lowBound && m_lowBound <= _numRange.m_highBound)
+	{
+		return true;
+	}
+
+	if (m_highBound >= _numRange.m_lowBound && m_highBound <= _numRange.m_highBound)
+	{
+		return true;
+	}
 	return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::includes(NumericRange const & _nr) const
+inline bool NumericRange::includes(NumericRange const & _numRange) const
 {
-	return _nr.m_lowBound >= m_lowBound && _nr.m_highBound <= m_highBound;
+	if (_numRange.m_lowBound >= m_lowBound && _numRange.m_highBound <= m_highBound)
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::belongsTo(NumericRange const & _nr) const
+inline bool NumericRange::adjacentTo(NumericRange const & _numRange) const
 {
-	return _nr.m_lowBound <= m_lowBound && _nr.m_highBound >= m_highBound;
+	if (_numRange.m_highBound < m_lowBound || _numRange.m_lowBound > m_highBound)
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::adjacentTo(NumericRange const & _nr) const
+inline bool NumericRange::operator !=(NumericRange const & _numRange) const
 {
-	return _nr.m_highBound < m_lowBound || _nr.m_lowBound > m_highBound;
+	return !(*this == _numRange);
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::operator ==(NumericRange const & _nr) const
+inline bool NumericRange::operator >=(NumericRange const & _numRange) const
 {
-	return _nr.m_lowBound == m_lowBound && _nr.m_highBound == m_highBound;
+	if (m_lowBound > _numRange.m_lowBound ||
+	   (m_lowBound == _numRange.m_lowBound && m_highBound >= _numRange.m_highBound))
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::operator !=(NumericRange const & _nr) const
+inline bool NumericRange::operator <=(NumericRange const & _numRange) const
 {
-	return !(*this == _nr);
+	if (m_lowBound < _numRange.m_lowBound || 
+	   (m_lowBound == _numRange.m_lowBound && m_highBound <= _numRange.m_highBound))
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::operator >=(NumericRange const & _nr) const
+inline bool NumericRange::operator <(NumericRange const & _numRange) const
 {
-	return m_lowBound > _nr.m_lowBound || (m_lowBound == _nr.m_lowBound && m_highBound >= _nr.m_highBound);
+	if (m_lowBound < _numRange.m_lowBound ||
+	   (m_lowBound == _numRange.m_lowBound && m_highBound < _numRange.m_highBound))
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::operator <=(NumericRange const & _nr) const
+inline bool NumericRange::operator >(NumericRange const & _numRange) const
 {
-	return m_lowBound < _nr.m_lowBound || (m_lowBound == _nr.m_lowBound && m_highBound <= _nr.m_highBound);
+	if (m_lowBound > _numRange.m_lowBound || 
+	   (m_lowBound == _numRange.m_lowBound && m_highBound > _numRange.m_highBound))
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool NumericRange::operator <(NumericRange const & _nr) const
-{
-	return m_lowBound < _nr.m_lowBound || (m_lowBound == _nr.m_lowBound && m_highBound < _nr.m_highBound);
-}
-
-/*****************************************************************************/
-
-inline
-bool NumericRange::operator >(NumericRange const & _nr) const
-{
-	return m_lowBound > _nr.m_lowBound || (m_lowBound == _nr.m_lowBound && m_highBound > _nr.m_highBound);
-}
-
-/*****************************************************************************/
-
-inline
-NumericRange::Iterator NumericRange::begin() const
+//возврат итератора на элемент начала интервала
+inline NumericRange::Iterator NumericRange::begin() const
 {
 	return Iterator(m_lowBound);
 }
 
-/*****************************************************************************/
-
-inline
-NumericRange::Iterator NumericRange::end() const
+//возврат итератора на элемент за концом интервала
+inline NumericRange::Iterator NumericRange::end() const
 {
 	return Iterator(m_highBound + 1);
 }
-
-/*****************************************************************************/
-
 
 #endif //  _NUMERIC_RANGE_HPP_

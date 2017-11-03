@@ -200,133 +200,131 @@ DECLARE_OOP_TEST( bitset_test_move_assignment_operator )
 /*****************************************************************************/
 
 
-//DECLARE_OOP_TEST( bitset_test_clearAll )
-//{
-//	Bitset b1( "001101" );
-//	b1.clearAll();
-//	assert( getBitsetAsString( b1 ) == "000000" );
-//
-//	Bitset b2( "00000000000011111111111100000000001111111111" );
-//	b2.clearAll();
-//	assert( getBitsetAsString( b2 ) == "00000000000000000000000000000000000000000000" );
-//}
-//
-//
-///*****************************************************************************/
-//
-//
-//DECLARE_OOP_TEST( bitset_test_bitwise_inversion )
-//{
-//	Bitset b1( "001101" );
-//	assert( getBitsetAsString( ~ b1 ) == "110010" );
-//
-//	Bitset b2( "00000000000011111111111100000000001111111111" );
-//	assert( getBitsetAsString( ~ b2 ) == "11111111111100000000000011111111110000000000" );
-//}
-//
-//
-///*****************************************************************************/
-//
-//
-//DECLARE_OOP_TEST( bitset_test_logical_inversion_conversion )
-//{
-//	Bitset b1( "001101" );
-//	assert( b1 );
-//
-//	Bitset b2( "00000000000011111111111100000000001111111111" );
-//	assert( b2 );
-//
-//	Bitset b3;
-//	assert( ! b3 );
-//
-//	Bitset b4( "000000000000000000000000000000000000000000000000000000000000" );
-//	assert( ! b4 );
-//}
-//
-//
-///*****************************************************************************/
-//
-//
-//DECLARE_OOP_TEST( bitset_test_bitwise_conjunction )
-//{
-//	Bitset b1( "001101" );
-//	Bitset b2( "101011" );
-//	
-//	assert( getBitsetAsString( b1 & b2 ) == "001001" );
-//
-//	b1 &= b2;
-//	assert( getBitsetAsString( b1 ) == "001001" );
-//
-//	Bitset b3( "100000000000000000001110000010001" );
-//	assert( getBitsetAsString( b2 & b3 ) == "100000" );
-//	assert( getBitsetAsString( b3 & b2 ) == "100000000000000000000000000000000" );
-//}
-//
-//
-///*****************************************************************************/
-//
-//
-//DECLARE_OOP_TEST( bitset_test_bitwise_disjunction )
-//{
-//	Bitset b1( "001101" );
-//	Bitset b2( "101011" );
-//
-//	assert( getBitsetAsString( b1 | b2 ) == "101111" );
-//
-//	b1 |= b2;
-//	assert( getBitsetAsString( b1 ) == "101111" );
-//
-//	Bitset b3( "100100000000000000001110000010001" );
-//	assert( getBitsetAsString( b2 | b3 ) == "101111" );
-//	assert( getBitsetAsString( b3 | b2 ) == "101111000000000000001110000010001" );
-//}
-//
-//
-///*****************************************************************************/
-//
-//
-//DECLARE_OOP_TEST( bitset_test_get_set_clear_in_range )
-//{
-//	Bitset b( "011" );
-//	assert( ! b.isSet( 0 ) );
-//	assert(   b.isSet( 1 ) );
-//	assert(   b.isSet( 2 ) );
-//
-//	b.set( 0 );
-//	assert( b.isSet( 0 ) );
-//
-//	b.clear( 2 );
-//	assert( ! b.isSet( 2 ) );
-//
-//	assert( getBitsetAsString( b ) == "110" );
-//}
-//
-//
-///*****************************************************************************/
-//
-//#define CHECK_OUT_OF_RANGE( operation )							\
-//	try                                                         \
-//    {                                                           \
-//		operation;                                              \
-//    }                                                           \
-//    catch ( const std::exception & e )                          \
-//    {                                                           \
-//        assert( ! strcmp( e.what(), "Index out of range" ) );   \
-//    }
-//
-//
-//DECLARE_OOP_TEST( bitset_test_get_set_clear_out_of_range )
-//{
-//	Bitset b( "011" );
-//
-//	CHECK_OUT_OF_RANGE( b.isSet( -1 ) );
-//	CHECK_OUT_OF_RANGE( b.isSet( 3 ) );
-//	CHECK_OUT_OF_RANGE( b.set( -1 ) );
-//	CHECK_OUT_OF_RANGE( b.set( 3 ) );
-//	CHECK_OUT_OF_RANGE( b.clear( -1 ) );
-//	CHECK_OUT_OF_RANGE( b.clear( 3 ) );
-//}
-//
-//
-//
-///*****************************************************************************/
+DECLARE_OOP_TEST( bitset_test_clearAll )
+{
+	Bitset b1( "001101" );
+	b1.clearAll();
+	assert( getBitsetAsString( b1 ) == "000000" );
+
+	Bitset b2( "00000000000011111111111100000000001111111111" );
+	b2.clearAll();
+	assert( getBitsetAsString( b2 ) == "00000000000000000000000000000000000000000000" );
+}
+
+
+/*****************************************************************************/
+
+DECLARE_OOP_TEST(bitset_test_bitwise_conjunction)
+{
+	Bitset b1("001101");
+	Bitset b2("101011");
+
+	assert(getBitsetAsString(b1 & b2) == "001001");
+
+	b1 &= b2;
+	assert(getBitsetAsString(b1) == "001001");
+
+	Bitset b3("100000000000000000001110000010001");
+	assert(getBitsetAsString(b2 & b3) == "100000");
+	assert(getBitsetAsString(b3 & b2) == "100000000000000000000000000000000");
+}
+
+
+/*****************************************************************************/
+
+
+DECLARE_OOP_TEST(bitset_test_bitwise_disjunction)
+{
+	Bitset b1("001101");
+	Bitset b2("101011");
+
+	assert(getBitsetAsString(b1 | b2) == "101111");
+
+	b1 |= b2;
+	assert(getBitsetAsString(b1) == "101111");
+
+	Bitset b3("100100000000000000001110000010001");
+	assert(getBitsetAsString(b2 | b3) == "101111");
+	assert(getBitsetAsString(b3 | b2) == "101111000000000000001110000010001");
+}
+
+
+/*****************************************************************************/
+
+DECLARE_OOP_TEST( bitset_test_bitwise_inversion )
+{
+	Bitset b1( "001101" );
+	assert( getBitsetAsString( ~ b1 ) == "110010" );
+
+	Bitset b2( "00000000000011111111111100000000001111111111" );
+	assert( getBitsetAsString( ~ b2 ) == "11111111111100000000000011111111110000000000" );
+}
+
+
+/*****************************************************************************/
+
+
+DECLARE_OOP_TEST( bitset_test_logical_inversion_conversion )
+{
+	Bitset b1( "001101" );
+	assert( b1 );
+
+	Bitset b2( "00000000000011111111111100000000001111111111" );
+	assert( b2 );
+
+	Bitset b3;
+	assert( ! b3 );
+
+	Bitset b4( "000000000000000000000000000000000000000000000000000000000000" );
+	assert( ! b4 );
+}
+
+
+/*****************************************************************************/
+
+
+DECLARE_OOP_TEST( bitset_test_get_set_clear_in_range )
+{
+	Bitset b( "011" );
+	assert( ! b.isSet( 0 ) );
+	assert(   b.isSet( 1 ) );
+	assert(   b.isSet( 2 ) );
+
+	b.set( 0 );
+	assert( b.isSet( 0 ) );
+
+	b.clear( 2 );
+	assert( ! b.isSet( 2 ) );
+
+	assert( getBitsetAsString( b ) == "110" );
+}
+
+
+/*****************************************************************************/
+
+#define CHECK_OUT_OF_RANGE( operation )							\
+	try                                                         \
+    {                                                           \
+		operation;                                              \
+    }                                                           \
+    catch ( const std::exception & e )                          \
+    {                                                           \
+        assert( ! strcmp( e.what(), "Index out of range" ) );   \
+    }
+
+
+DECLARE_OOP_TEST( bitset_test_get_set_clear_out_of_range )
+{
+	Bitset b( "011" );
+
+	CHECK_OUT_OF_RANGE( b.isSet( -1 ) );
+	CHECK_OUT_OF_RANGE( b.isSet( 3 ) );
+	CHECK_OUT_OF_RANGE( b.set( -1 ) );
+	CHECK_OUT_OF_RANGE( b.set( 3 ) );
+	CHECK_OUT_OF_RANGE( b.clear( -1 ) );
+	CHECK_OUT_OF_RANGE( b.clear( 3 ) );
+}
+
+
+
+/*****************************************************************************/

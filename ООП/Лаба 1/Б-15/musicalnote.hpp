@@ -89,11 +89,11 @@ public:
 
 private:
 
+	bool checkMusicalNote(Note _note, Sign _sign) const;
+
 	Note m_note;
 
 	Sign m_sign;
-
-	Interval m_interval;
 
 /*------------------------------------------------------------------*/
 
@@ -102,7 +102,18 @@ private:
 inline bool 
 MusicalNote::operator == (const MusicalNote & _note) const
 {
-	return m_note == _note.m_note && m_sign == _note.m_sign;
+	int lhs = 0, rhs = 0;
+	if (m_sign == MusicalNote::Sign::Sign_Flat)
+		lhs -= 1;
+	else if (m_sign == MusicalNote::Sign::Sign_Sharp)
+		lhs += 1;
+	if (_note.m_sign == MusicalNote::Sign::Sign_Flat)
+		rhs -= 1;
+	else if (_note.m_sign == MusicalNote::Sign::Sign_Sharp)
+		rhs += 1; 
+	lhs += getNote() * 2;
+	rhs += _note.getNote() * 2;
+	return lhs == rhs;
 }
 
 inline bool 

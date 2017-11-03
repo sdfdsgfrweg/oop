@@ -3,214 +3,210 @@
 #include "news_archive.hpp"
 #include "messages.hpp"
 #include <iostream>
-/*****************************************************************************/
 
 int NewsArchive::getEntriesCount() const
 {
-	return m_news.size();
+	return news.size();
 }
 
-/*****************************************************************************/
-
-bool NewsArchive::hasEntry(DateTime const & _time) const
+bool NewsArchive::hasEntry(DateTime date) const
 {	
-	return m_news.find(_time) != m_news.end();
+	return news.find(date) != news.end();
 }
 
-/*****************************************************************************/
-
-bool NewsArchive::hasEntry(std::string const & _title) const
+bool NewsArchive::hasEntry(std::string title) const
 {
-	return m_newslog.find(_title) != m_newslog.end();
+	return news_journal.find(title) != news_journal.end();
 }
 
-/*****************************************************************************/
-
-std::string const & NewsArchive::getEntryTitle(DateTime const & _time) const
+std::string const & NewsArchive::getEntryTitle(DateTime  date) const
 {
-	auto it = m_news.find(_time);
-	if (it == m_news.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	return it->second.m_title;
-}
-
-/*****************************************************************************/
-
-std::string const & NewsArchive::getEntryText(DateTime const & _time) const
-{
-	auto it = m_news.find(_time);
-	if (it == m_news.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	return it->second.m_detailText;
-}
-
-/*****************************************************************************/
-
-std::string const & NewsArchive::getEntryText(std::string const & _title) const
-{
-	auto it = m_newslog.find(_title);
-	if (it == m_newslog.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	return m_news.find(it->second)->second.m_detailText;
-}
-
-/*****************************************************************************/
-
-DateTime const & NewsArchive::getEntryDate(std::string const & _title) const
-{
-	auto it = m_newslog.find(_title);
-	if (it == m_newslog.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	return it->second;
-}
-
-/*****************************************************************************/
-
-void NewsArchive::forEachEntry(std::function<void(
-	DateTime const & _time,
-	std::string const & _title,
-	std::string const & _text)>
-	_function) const
-{
-	for (auto eachNew : m_news)
-		_function(
-			eachNew.first,
-			eachNew.second.m_title,
-			eachNew.second.m_detailText
-		);
-}
-
-/*****************************************************************************/
-
-void NewsArchive::addEntry(
-	DateTime const & _time,
-	std::string const & _title,
-	std::string const & _text
-)
-{
-	if (_title.empty())
-		throw std::logic_error(Messages::EmptyEntryTitle);
-
-	if (_text.empty())
-		throw std::logic_error(Messages::EmptyEntryText);	
-
-	auto it1 = m_news.find(_time);
-
-	auto it2 = m_newslog.find(_title);
-
-	if (it1 != m_news.end() || it2 != m_newslog.end())
-		throw std::logic_error(Messages::DuplicatedEntry);
-	
-	m_news.insert(std::make_pair(_time, New(_title,_text)));
-	m_newslog.insert(std::make_pair(_title,_time));
-}
-
-/*****************************************************************************/
-
-void NewsArchive::modifyEntryTitle(
-	DateTime const & _time,
-	std::string const & _newTitle
-)
-{
-	if (_newTitle.empty())
-		throw std::logic_error(Messages::EmptyEntryTitle);
-
-	auto it1 = m_news.find(_time);
-	if (it1 == m_news.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	m_newslog.erase(it1->second.m_title);
-	it1->second.m_title = _newTitle;
-	m_newslog.insert(std::make_pair(_newTitle, _time));
-}
-
-/*****************************************************************************/
-
-void NewsArchive::modifyEntryText(
-	DateTime const & _time,
-	std::string const & _newText
-)
-{
-	if (_newText.empty())
-		throw std::logic_error(Messages::EmptyEntryText);
-
-	auto it = m_news.find(_time);
-	if (it == m_news.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	it->second.m_detailText = _newText;
-}
-
-/*****************************************************************************/
-
-void NewsArchive::modifyEntryText(
-	std::string const & _title,
-	std::string const & _newText
-)
-{
-	if (_newText.empty())
-		throw std::logic_error(Messages::EmptyEntryText);
-
-	auto it1 = m_newslog.find(_title);
-	if (it1 == m_newslog.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	m_news.find(it1->second)->second.m_detailText = _newText;
-}
-
-/*****************************************************************************/
-
-void NewsArchive::removeEntry(DateTime const & _time)
-{
-	auto it = m_news.find(_time);
-	if (it == m_news.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	m_newslog.erase(m_newslog.find(it->second.m_title));
-	m_news.erase(it->first);
-}
-
-/*****************************************************************************/
-
-void NewsArchive::removeEntry(std::string const & _title)
-{
-	auto it = m_newslog.find(_title);
-	if (it == m_newslog.end())
-		throw std::logic_error(Messages::EntryDoesNotExist);
-
-	m_news.erase(it->second);
-	m_newslog.erase(it);
-}
-
-/*****************************************************************************/
-
-std::vector<std::string> const
-NewsArchive::getEntryTitlesWithTextContains(std::string const & _fragment) const
-{
-	auto vec = m_news;
-	std::vector<std::string> titles;
-
-	int fragIndex;
-	for (auto eachNew : m_news)
+	std::map<DateTime, New>::const_iterator iterator = news.find(date);
+	if (iterator == news.end()) 
 	{
-		fragIndex = 0;
-		for (int i = 0; i < eachNew.second.m_detailText.size(); i++)
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	return iterator->second.m_title;
+}
+
+std::string const & NewsArchive::getEntryText(DateTime date) const
+{
+	std::map<DateTime, New>::const_iterator iterator= news.find(date);
+	if (iterator == news.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	return iterator->second.m_text;
+}
+
+std::string const & NewsArchive::getEntryText(std::string title) const
+{
+	std::map<std::string, DateTime>::const_iterator iterator= news_journal.find(title);
+	if (iterator == news_journal.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	return news.find(iterator->second)->second.m_text;
+}
+
+DateTime const & NewsArchive::getEntryDate(std::string title) const
+{
+	std::map<std::string, DateTime>::const_iterator iterator= news_journal.find(title);
+	if (iterator == news_journal.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	return iterator->second;
+}
+
+void NewsArchive::forEachEntry(NewsArchive::EntryHandler _f) const
+{
+	for (auto n : news)
+	{
+		_f(n.first, n.second.m_title, n.second.m_text);
+	}
+}
+
+void NewsArchive::addEntry(DateTime date,std::string title,std::string text)
+{
+	if (title.empty())
+	{
+		throw std::logic_error(Messages::EmptyEntryTitle);
+	}
+		
+	if (text.empty())
+	{
+		throw std::logic_error(Messages::EmptyEntryText);
+	}
+		
+	std::map<DateTime, New>::iterator iterator1 = news.find(date);
+
+	std::map<std::string, DateTime>::iterator iterator2 = news_journal.find(title);
+
+	if (iterator1 != news.end() || iterator2 != news_journal.end())
+	{
+		throw std::logic_error(Messages::DuplicatedEntry);
+	}
+	
+	news.insert(std::make_pair(date, New(title,text)));
+
+	news_journal.insert(std::make_pair(title,date));
+}
+
+void NewsArchive::modifyEntryTitle(DateTime date,std::string new_title)
+{
+	if (new_title.empty())
+	{
+		throw std::logic_error(Messages::EmptyEntryTitle);
+	}
+		
+	std::map<DateTime, New>::iterator iterator1 = news.find(date);
+
+	if (iterator1 == news.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	news_journal.erase(iterator1->second.m_title);
+	
+	iterator1->second.m_title = new_title;
+	
+	news_journal.insert(std::make_pair(new_title, date));
+}
+
+void NewsArchive::modifyEntryText(DateTime date, std::string new_text)
+{
+	if (new_text.empty())
+	{
+		throw std::logic_error(Messages::EmptyEntryText);
+	}
+	
+	std::map<DateTime, New>::iterator iterator= news.find(date);
+	if (iterator == news.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	iterator->second.m_text = new_text;
+}
+
+void NewsArchive::modifyEntryText(std::string title,std::string new_text)
+{
+	if (new_text.empty())
+	{
+		throw std::logic_error(Messages::EmptyEntryText);
+	}
+		
+	std::map<std::string, DateTime>::iterator iterator1 = news_journal.find(title);
+	if (iterator1 == news_journal.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	news.find(iterator1->second)->second.m_text = new_text;
+}
+
+void NewsArchive::removeEntry(DateTime  date)
+{
+	std::map<DateTime,New>::iterator iterator = news.find(date);
+	
+	if (iterator == news.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	news_journal.erase(news_journal.find(iterator->second.m_title));
+	
+	news.erase(iterator->first);
+}
+
+void NewsArchive::removeEntry(std::string  title)
+{
+	std::map<std::string, DateTime>::iterator iterator= news_journal.find(title);
+
+	if (iterator == news_journal.end())
+	{
+		throw std::logic_error(Messages::EntryDoesNotExist);
+	}
+		
+	news.erase(iterator->second);
+
+	news_journal.erase(iterator);
+}
+
+std::vector<std::string> const NewsArchive::getEntryTitlesWithTextContains(std::string frag) const
+{
+	std::vector<std::string> resultVector;
+
+	int fragment_counter;
+	for (auto n : news)
+	{
+		fragment_counter = 0;
+		for (int i = 0; i < n.second.m_text.size(); i++)
 		{
-			(_fragment[fragIndex] == eachNew.second.m_detailText[i]) ? fragIndex++ : fragIndex = 0;
-			
-			if (fragIndex == _fragment.size())
+			if (frag[fragment_counter] == n.second.m_text[i])
+			{
+				fragment_counter++;
+			}
+			else
+			{
+				fragment_counter = 0;
+			}
+			if (fragment_counter == frag.size())
+			{
 				break;
+			}
 		}
 
-		if (fragIndex == _fragment.size() || _fragment.empty())
-			titles.push_back(eachNew.second.m_title);
+		if (fragment_counter == frag.size() || frag.empty())
+		{
+			resultVector.push_back(n.second.m_title);
+		}
 	}
 
-	return titles;
+	return resultVector;
 }
-
-/*****************************************************************************/

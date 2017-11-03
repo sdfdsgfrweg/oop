@@ -24,11 +24,41 @@ public:
 
 	Bitset(std::string const & _str);
 
+	Bitset & operator =(Bitset const & _b);
+
+	Bitset(Bitset const & _b);
+
+	Bitset & operator =(Bitset && _b);
+
+	Bitset(Bitset && _b);
+
 	~Bitset();
 
 	friend std::ostream & operator << (std::ostream & _s, Bitset const & _set);
 
+	bool isSet(int _index) const;
+
+	void set(int _index);
+
+	void clear(int _index);
+
+	void clearAll();
+
+	Bitset & operator ~ ();
+
+	bool operator !() const;
+
+	bool operator ()();
+
 	int getSize() const;
+
+	Bitset & operator & (const Bitset & _b) const;
+
+	Bitset & operator | (const Bitset & _b) const;
+
+	void operator &= (const Bitset & _b);
+	
+	void operator |= (const Bitset & _b);
 
 /*------------------------------------------------------------------*/
 

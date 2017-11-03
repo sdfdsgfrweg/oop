@@ -4,120 +4,132 @@
 
 #include <stdexcept>
 
-/*****************************************************************************/
+NumericRange::Iterator::Iterator(int _pos)
+{
+	m_currPos = _pos;
+}
 
-NumericRange::Iterator::Iterator(int _position)
-	: m_currentPosition(_position)
-{}
-
-/*****************************************************************************/
-
+//оператор разыменования
 int NumericRange::Iterator::operator*() const
 {
-	return m_currentPosition;
+	return m_currPos;
 }
 
-/*****************************************************************************/
-
-bool NumericRange::Iterator::operator==(Iterator i) const
+bool NumericRange::Iterator::operator==(Iterator _iter) const
 {
-	return i.m_currentPosition == m_currentPosition;
+	return _iter.m_currPos == m_currPos;
 }
 
-/*****************************************************************************/
-
-bool NumericRange::Iterator::operator!=(Iterator i) const
+bool NumericRange::Iterator::operator!=(Iterator _iter) const
 {
-	return !(i == *this);
+	return !(_iter == *this);
 }
 
-/*****************************************************************************/
-
+//оператор постфиксного инкремента
 NumericRange::Iterator & NumericRange::Iterator::operator++()
 {
-	NumericRange::Iterator copy = *this;
-
-	m_currentPosition++;
-
-	return copy;
+	NumericRange::Iterator _new = *this;
+	m_currPos++;
+	return _new;
 }
 
-/*****************************************************************************/
-
+//оператор префиксного инкремента
 NumericRange::Iterator NumericRange::Iterator::operator++(int)
 {
-	m_currentPosition++;
-
+	m_currPos++;
 	return * this;
 }
 
-/*****************************************************************************/
-
+//конструктор по умолчанию
 NumericRange::NumericRange()
-	: m_highBound(0)
-	, m_lowBound(0)
-{}
-
-/*****************************************************************************/
-
-NumericRange::NumericRange(int _low, int _high)
-	: m_lowBound(_low)
-	, m_highBound(_high)
 {
+	m_highBound = m_lowBound = 0;
+}
+
+//конструктор с параметрами
+NumericRange::NumericRange(
+	int _l,
+	int _h
+)
+{
+	m_lowBound = _l;
+	m_highBound = _h;
 	if (m_lowBound > m_highBound)
 		throw std::logic_error("Low bound higher than high bound");
 }
 
-/*****************************************************************************/
-
-NumericRange::NumericRange(std::string const & _str)
+//конструктор из строки
+NumericRange::NumericRange(std::string const & _s)
 {
-	std::string lhs, rhs;
-
-	if (_str.find("[") == std::string::npos) throw std::logic_error("Invalid format");
-
-	if (_str.find("]") == std::string::npos) throw std::logic_error("Invalid format");
+	//переменные для левой и правой границы интервала
+	std::string l, h;
 	
-	if (_str.find(":") == std::string::npos) throw std::logic_error("Invalid format");
+	//воспользуемся встроеным методом в std::string::find , который
+	//ищет вхождение символов/строки и возвращает индекс , в противном случае
+	//возвращает -1
 
-	int leftBracket = 0, rightBracket = 0, colon = 0;
-	for (int i = 0; i < _str.length(); i++)
+	if (_s.find("[") == std::string::npos) 
+		throw std::logic_error("Invalid format");
+	if (_s.find("]") == std::string::npos)
+		throw std::logic_error("Invalid format");
+	if (_s.find(":") == std::string::npos) 
+		throw std::logic_error("Invalid format");
+	
+	//проверка на то, что у нас в строке имеется только по одному екземпляру
+	//квадратных скобок и двоеточие
+	int lBr = 0,
+		rBr = 0,
+		dots = 0;
+
+	for (int i = 0; i < _s.length(); i++)
 	{
-		if (_str[i] == '[') leftBracket++;
-		if (_str[i] == ']') rightBracket++;
-		if (_str[i] == ':') colon++;
+		if (_s[i] == '[')
+			lBr++;
+		if (_s[i] == ']')
+			rBr++;
+		if (_s[i] == ':')
+			dots++;
 	}
 
-	if (leftBracket > 1 || rightBracket > 1 || colon > 1) throw std::logic_error("Invalid format");
+	//если больше 1 , то выбрасываем исключение
+	if (lBr > 1 || rBr > 1 || dots > 1)
+		throw std::logic_error("Invalid format");
 
-	bool isDivided = false;
-	for (int i = 1; i < _str.length() - 1; i++)
+	//начинаем разделять числа
+	bool isDots = false;
+	for (int i = 1; i < _s.length() - 1; i++)
 	{
-		if (_str[i] == ':')
+		//если дошли до разделителя, то начинаем считывать другую границу
+		if (_s[i] == ':')
 		{
-			isDivided = true;
+			isDots = true;
 			continue;
 		}
-		(isDivided) ? rhs += _str[i] : lhs += _str[i];
+
+		//добавление символов 
+		if (isDots)
+			h += _s[i];
+		else
+			l += _s[i];
 	}
 
-	if (!std::atoi(lhs.c_str())) throw std::logic_error("Invalid format");
+	//пытаемся получившееся проверить на то,
+	//преобразуется ли данная строка в число или нет
+	if (!std::atoi(l.c_str()))
+		throw std::logic_error("Invalid format");
+	if (!std::atoi(h.c_str())) 
+		throw std::logic_error("Invalid format");
 
-	if (!std::atoi(rhs.c_str())) throw std::logic_error("Invalid format");
-
-	m_lowBound = std::atoi(lhs.c_str());
-	m_highBound = std::atoi(rhs.c_str());
-
+	//если да , то присваиваем
+	m_lowBound = std::atoi(l.c_str());
+	m_highBound = std::atoi(h.c_str());
 	if (m_lowBound > m_highBound)
 		throw std::logic_error("Low bound higher than high bound");
 }
-
-/*****************************************************************************/
 
 std::ostream & operator<<(std::ostream & _s, NumericRange const & _nr)
 {
+	//глобальный оператор вывода в поток
 	_s << "[" << _nr.getLowBound() << ":" << _nr.getHighBound() << "]";
 	return _s;
 }
-
-/*****************************************************************************/

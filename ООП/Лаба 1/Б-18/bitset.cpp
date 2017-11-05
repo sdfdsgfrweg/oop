@@ -6,10 +6,10 @@
 
 /*****************************************************************************/
 
-Bitset::~Bitset()
-{
-	delete[] m_bitset;
-}
+//Bitset::~Bitset()
+//{
+//	delete[] m_bitset;
+//}
 
 bool Bitset::isSet(int _index) const
 {
@@ -65,14 +65,12 @@ void Bitset::clearAll()
 
 Bitset & Bitset::operator~()
 {
-	int currentBitset = 0;
 	for (int i = 0; i < m_bitsetSize; i++)
 	{
-		if (i == 32) currentBitset++;
-		if (m_bitset[currentBitset] & (1 << i))
-			m_bitset[currentBitset] &= ~(1 << i);
+		if (m_bitset[i / 32] & (1 << i))
+			m_bitset[i / 32] &= ~(1 << i);
 		else
-			m_bitset[currentBitset] |= (1 << i);
+			m_bitset[i / 32] |= (1 << i);
 	}
 
 	return * this;
@@ -80,11 +78,9 @@ Bitset & Bitset::operator~()
 
 bool Bitset::operator!() const
 {
-	int currentBitset = 0;
 	for (int i = 0; i < m_bitsetSize; i++)
 	{
-		if (i == 32) currentBitset++;
-		if (m_bitset[currentBitset] & (1 << i)) return false;
+		if (m_bitset[i / 32] & (1 << i)) return false;
 	}
 
 	return true;
@@ -104,7 +100,7 @@ Bitset::Bitset(int _size)
 		throw std::logic_error("Non-positive bitset size");
 
 	m_bitsetSize = _size;
-	int arraySize = m_bitsetSize / 32 + 1;
+	int arraySize = (m_bitsetSize / 32) + 1;
 	m_bitset = new unsigned int[arraySize];
 	
 	for (int i = 0; i < arraySize; i++) m_bitset[i] = 1 << 32;
@@ -156,54 +152,52 @@ Bitset & Bitset::operator=(Bitset const & _b)
 	return * this;
 }
 
-Bitset & Bitset::operator & (const Bitset & _b) const
+Bitset Bitset::operator & (Bitset & _b) const
 {
-	Bitset _new = *this;
-	_new &= _b;
+
+	Bitset _new(*this);
+
+	int size = (m_bitsetSize / 32) + 1;
+	for (int i = 0; i < size; i++)
+		_new.m_bitset[i] = m_bitset[i] & _b.m_bitset[i];
+
 	return _new;
 }
 
-Bitset & Bitset::operator | (const Bitset & _b) const
+Bitset Bitset::operator | (Bitset & _b) const
 {
-	Bitset _new = *this;
-	_new |= _b;
+	Bitset _new(*this);
+
+	int size = (m_bitsetSize / 32) + 1;
+	for (int i = 0; i < size; i++)
+		_new.m_bitset[i] = m_bitset[i] | _b.m_bitset[i];
+
 	return _new;
 }
 
-void Bitset::operator &= (const Bitset & _b)
+Bitset & Bitset::operator &= ( Bitset & _b)
 {
-	int currentAnotherSize = 0, currentBitset = 0;
-	for (int i = 0; i < m_bitsetSize; i++)
-	{
-		if (i == 32) currentBitset++;
+	int size = (m_bitsetSize / 32) + 1;
+	for (int i = 0; i < size; i++)
+		m_bitset[i] &= _b.m_bitset[i];
 
-		if (currentAnotherSize > m_bitsetSize) 
-			m_bitset[currentBitset] &= ~(1 << i);
-		else
-		{
-			if ((m_bitset[currentBitset] & (1 << i)) && !(_b.m_bitset[currentBitset] & (1 << i)))
-				m_bitset[currentBitset] &= ~(1 << i);
-			currentAnotherSize++;
-		}		
-	}
+	return *this;
 }
 
-void Bitset::operator |= (const Bitset & _b)
+Bitset & Bitset::operator |= (Bitset & _b)
 {
-	int currentBitset = 0;
-	for (int i = 0; i < m_bitsetSize; i++)
-	{
-		if (i == 32) currentBitset++;
+	int size = (m_bitsetSize / 32) + 1;
+	for (int i = 0; i < size; i++)
+		m_bitset[i] |= _b.m_bitset[i];
 
-		if (!(m_bitset[currentBitset] & (1 << i)) && (_b.m_bitset[currentBitset] & (1 << i)))
-			m_bitset[currentBitset] |= (1 << i);
-	}
+	return *this;
 }
 
 Bitset::Bitset(Bitset const & _b)
 {
 	int copyingSize = _b.m_bitsetSize / 32 + 1;
 	m_bitsetSize = _b.m_bitsetSize;
+
 	m_bitset = new unsigned int[copyingSize];
 	for (int i = 0; i < copyingSize; i++)
 		m_bitset[i] = _b.m_bitset[i];
@@ -230,20 +224,15 @@ Bitset::Bitset(Bitset && _b)
 std::ostream & operator << (std::ostream & _s, Bitset const & _set)
 {
 	std::string buffer;
-	int m_currentBit = 0;
 	
 	for (int i = 0; i < _set.m_bitsetSize; i++)
 	{
-		if (i == 32) m_currentBit++;
-
-		if (_set.m_bitset[m_currentBit] & (1 << i))
+		if (_set.m_bitset[i / 32] & (1 << i))
 			buffer += '1';
 		else
 			buffer += '0';
 	}
-
+	
 	_s << buffer;
 	return _s;
 }
-
-

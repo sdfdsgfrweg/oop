@@ -31,8 +31,8 @@ public:
 	Bitset & operator =(Bitset && _b);
 
 	Bitset(Bitset && _b);
-
-	~Bitset();
+/*
+	~Bitset();*/
 
 	friend std::ostream & operator << (std::ostream & _s, Bitset const & _set);
 
@@ -52,13 +52,13 @@ public:
 
 	int getSize() const;
 
-	Bitset & operator & (const Bitset & _b) const;
+	Bitset operator & (Bitset & _b) const;
 
-	Bitset & operator | (const Bitset & _b) const;
+	Bitset operator | (Bitset & _b) const;
 
-	void operator &= (const Bitset & _b);
+	Bitset & operator &= (Bitset & _b);
 	
-	void operator |= (const Bitset & _b);
+	Bitset & operator |= (Bitset & _b);
 
 /*------------------------------------------------------------------*/
 

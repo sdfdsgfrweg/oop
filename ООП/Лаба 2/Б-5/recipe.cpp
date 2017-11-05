@@ -3,114 +3,118 @@
 #include "recipe.hpp"
 #include "messages.hpp"
 
-/*****************************************************************************/
-
-Recipe::Recipe(
-	std::string const & _recipeName, 
-	std::string const & _recipeDesc,
-	std::string const & _authorName
-)
-	: m_recipeName(_recipeName)
-	, m_recipeDesc(_recipeDesc)
-	, m_authorName(_authorName)
+Recipe::Recipe(std::string const & _name, std::string const & _description,std::string const & _author)
 {
-	if (m_recipeDesc.empty())
+	m_name = _name;
+	m_description = _description;
+	m_author = _author;
+
+	if (m_description.empty())
+	{
 		throw std::logic_error(Messages::EmptyRecipeDescription);
-
-	if (m_recipeName.empty())
+	}
+		
+	if (m_name.empty())
+	{
 		throw std::logic_error(Messages::EmptyRecipeName);
-
-	if (m_authorName.empty())
+	}
+		
+	if (m_author.empty())
+	{
 		throw std::logic_error(Messages::EmptyRecipeAuthor);
+	}
+		
 }
-
-/*****************************************************************************/
 
 int Recipe::getIngredientsCount() const
 {
 	return m_ingredients.size();
 }
 
-/*****************************************************************************/
-
-bool Recipe::hasIngredient(std::string const & _ingredientName) const
+void Recipe::addIngredient(std::string const & _ingredient_name, int _w)
 {
-	return m_ingredients.find(_ingredientName) != m_ingredients.end();
-}
-
-/*****************************************************************************/
-
-void Recipe::addIngredient(std::string const & _ingredientName, int _weigth)
-{
-	auto it = m_ingredients.find(_ingredientName);
-	if (it != m_ingredients.end())
+	auto iterator = m_ingredients.find(_ingredient_name);
+	if (iterator != m_ingredients.end())
+	{
 		throw std::logic_error(Messages::DuplicateIngredient);
-
-	if (_ingredientName.empty())
+	}
+		
+	if (_ingredient_name.empty())
+	{
 		throw std::logic_error(Messages::EmptyIngredientName);
-
-	if (_weigth < 1)
+	}
+		
+	if (_w < 1)
+	{
 		throw std::logic_error(Messages::IngredientValueMustBePositive);
-
-	m_ingredients.insert(std::make_pair(_ingredientName, _weigth));
+	}
+		
+	m_ingredients.insert(std::make_pair(_ingredient_name, _w));
 }
 
-/*****************************************************************************/
-
-void Recipe::modifyIngredient(std::string const & _ingredientName, int _newWeigth)
+void Recipe::modifyIngredient(std::string const & _ingredient_name, int _newW)
 {
-	if (_ingredientName.empty())
+	if (_ingredient_name.empty())
+	{
 		throw std::logic_error(Messages::EmptyIngredientName);
-
-	if (_newWeigth < 1)
+	}
+		
+	if (_newW < 1)
+	{
 		throw std::logic_error(Messages::IngredientValueMustBePositive);
-
-	auto it = m_ingredients.find(_ingredientName);
-	if (it == m_ingredients.end())
+	}
+		
+	auto iterator = m_ingredients.find(_ingredient_name);
+	if (iterator == m_ingredients.end())
+	{
 		throw std::logic_error(Messages::IngredientCannotBeFound);
-
-	it->second = _newWeigth;
+	}
+		
+	iterator->second = _newW;
 }
 
-/*****************************************************************************/
-
-int Recipe::getIngredientValue(std::string const & _ingredientName) const
+int Recipe::getIngredientValue(std::string const & _ingredient_name) const
 {
-	if (_ingredientName.empty())
+	if (_ingredient_name.empty())
+	{
 		throw std::logic_error(Messages::EmptyIngredientName);
-
-	auto it = m_ingredients.find(_ingredientName);
-	if (it == m_ingredients.end())
+	}
+		
+	auto iterator = m_ingredients.find(_ingredient_name);
+	if (iterator == m_ingredients.end())
+	{
 		throw std::logic_error(Messages::IngredientCannotBeFound);
-
-	return it->second;
+	}
+		
+	return iterator->second;
 }
-
-/*****************************************************************************/
 
 int Recipe::getCookStepsCount() const
 {
-	return m_cookSteps.size();
+	return m_cook_steps.size();
 }
 
-/*****************************************************************************/
-
-std::string const & Recipe::getCookStep(int _index) const
+std::string const & Recipe::getCookStep(int _i) const
 {
-	if (_index < 0 || _index >= m_cookSteps.size())
+	if (_i < 0 || _i >= m_cook_steps.size())
+	{
 		throw std::logic_error(Messages::IndexOutOfRange);
-
-	return m_cookSteps[_index];
+	}
+		
+	return m_cook_steps[_i];
 }
 
-/*****************************************************************************/
-
-void Recipe::addCookStep(std::string const & _cookStep)
+void Recipe::addCookStep(std::string const & _cook_step)
 {
-	if (_cookStep.empty())
+	if (_cook_step.empty())
+	{
 		throw std::logic_error(Messages::EmptyCookStep);
-
-	m_cookSteps.push_back(_cookStep);
+	}
+		
+	m_cook_steps.push_back(_cook_step);
 }
 
-/*****************************************************************************/
+bool Recipe::hasIngredient(std::string const & _ingredient_name) const
+{
+	return m_ingredients.find(_ingredient_name) != m_ingredients.end();
+}

@@ -3,161 +3,88 @@
 #ifndef _RECIPE_HPP_
 #define _RECIPE_HPP_
 
-/*****************************************************************************/
-
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <vector>
-
-/*****************************************************************************/
-
 
 class Recipe
 {
 
-/*-----------------------------------------------------------------*/
-
 public:
 
-/*-----------------------------------------------------------------*/
-
-	Recipe(
-		std::string const & _recipeName,
-		std::string const & _recipeDesc,
-		std::string const & _authorName
-	);
-
-	Recipe(Recipe const & _recipe) = delete;
-
+	Recipe( std::string const & _name, std::string const & _description, std::string const & _author);
+	Recipe(Recipe & _recipe) = delete;
 	Recipe(Recipe && _recipe) = delete;
-
 	Recipe & operator = (Recipe && _recipe) = delete;
-
-	Recipe & operator = (Recipe const & _recipe) = delete;
-
+	Recipe & operator = (Recipe & _recipe) = delete;
 	~Recipe() = default;
-
 	std::string	const & getAuthor() const;
-
 	std::string const & getName() const;
-
 	std::string const & getDescription() const;
-
 	int getIngredientsCount() const;
-
-	//------------------------------------------
-
-	typedef std::map<std::string, int>::const_iterator Iterator;
-
-	Iterator beginIngredients() const;
-
-	Iterator endIngredients() const;
-
-	bool hasIngredient(std::string const & _ingredientName) const;
-
-	void addIngredient(
-		std::string const & _ingredientName,
-		int _weigth
-	);
-
-	void modifyIngredient(
-		std::string const & _ingredientName,
-		int _newWeigth
-	);
-
-	int getIngredientValue(std::string const & _ingredientName) const;
-
+	std::unordered_map<std::string, int>::const_iterator beginIngredients() const;
+	std::unordered_map<std::string, int>::const_iterator endIngredients() const;
+	bool hasIngredient(std::string const & _ingredient_name) const;
+	void addIngredient(std::string const & _ingredient_name,int _weigth);
+	void modifyIngredient(std::string const & _ingredient_name,int _newWeigth);
+	int getIngredientValue(std::string const & _ingredient_name) const;
 	int getCookStepsCount() const;
-
 	std::string const & getCookStep(int _index) const;
-
-	void addCookStep(std::string const & _cookStep);
-
+	void addCookStep(std::string const & _cook_step);
 	bool operator == (Recipe const & _r) const;
-
 	bool operator != (Recipe const & _r) const;
 
-/*-----------------------------------------------------------------*/
-
 private:
-
-/*-----------------------------------------------------------------*/
-
-	std::string m_authorName;
-
-	std::string m_recipeName;
-
-	std::string m_recipeDesc;
-
-	std::vector<std::string> m_cookSteps;
-
-	std::map<std::string /* name */, int /*weigth*/> m_ingredients;
-
-/*-----------------------------------------------------------------*/
+	std::string m_author;
+	std::string m_name;
+	std::string m_description;
+	std::vector<std::string> m_cook_steps;
+	std::unordered_map<std::string, int> m_ingredients;
 
 };
 
-/*****************************************************************************/
-
-inline
-std::string const & Recipe::getDescription() const
+inline std::string const &
+Recipe::getDescription() const
 {
-	return m_recipeDesc;
+	return m_description;
 }
 
-/*****************************************************************************/
-
-inline
-std::string	const & Recipe::getAuthor() const
+inline std::string const &
+Recipe::getAuthor() const
 {
-	return m_authorName;
+	return m_author;
 }
 
-/*****************************************************************************/
-
-inline
-std::string const & Recipe::getName() const
+inline std::string const &
+Recipe::getName() const
 {
-	return m_recipeName;
+	return m_name;
 }
 
-/*****************************************************************************/
-
-inline
-bool Recipe::operator == (Recipe const & _r) const
+inline bool Recipe::operator == (Recipe const & _r) const
 {
-	return m_authorName == _r.m_authorName
-		&& m_recipeDesc == _r.m_recipeDesc
-		&& m_recipeName == _r.m_recipeName
-		&& m_ingredients == _r.m_ingredients
-		&& m_cookSteps == _r.m_cookSteps;
+	if (m_author == _r.m_author && m_description == _r.m_description && m_name == _r.m_name
+		&& m_ingredients == _r.m_ingredients && m_cook_steps == _r.m_cook_steps)
+		return true;
+	else
+		return false;
 }
 
-/*****************************************************************************/
-
-inline
-bool Recipe::operator != (Recipe const & _r) const
+inline bool Recipe::operator != (Recipe const & _r) const
 {
 	return !(*this == _r);
 }
 
-/*****************************************************************************/
-
-inline
-Recipe::Iterator Recipe::beginIngredients() const
+inline std::unordered_map<std::string, int>::const_iterator
+Recipe::beginIngredients() const
 {
 	return m_ingredients.cbegin();
 }
 
-/*****************************************************************************/
-
-inline
-Recipe::Iterator Recipe::endIngredients() const
+inline std::unordered_map<std::string, int>::const_iterator
+Recipe::endIngredients() const
 {
 	return m_ingredients.cend();
 }
-
-/*****************************************************************************/
-
 
 #endif // _RECIPE_HPP_

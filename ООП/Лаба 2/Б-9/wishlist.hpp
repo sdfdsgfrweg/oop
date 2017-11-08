@@ -65,7 +65,7 @@ public:
 
 	void operator += (const Wish & _wish);
 
-	Wish & operator[](int _index);
+	Wish operator[](int _index) const;
 
 	std::vector<std::string> getWishesWithPriority(int _wishesPriority) const;
 
@@ -105,6 +105,8 @@ std::string const & Wishlist::getOwner() const
 	return m_ownerName;
 }
 
+/*****************************************************************************/
+
 inline
 void Wishlist::correctOwner(std::string const & _correctOwnerName)
 {
@@ -113,6 +115,8 @@ void Wishlist::correctOwner(std::string const & _correctOwnerName)
 
 	m_ownerName = _correctOwnerName;
 }
+
+/*****************************************************************************/
 
 inline
 void Wishlist::addWish(std::string const & _wishName, int _wishPriority)
@@ -130,6 +134,8 @@ void Wishlist::addWish(std::string const & _wishName, int _wishPriority)
 	m_wishesOrderedByPriority.push_back(std::make_pair(_wishPriority,_wishName));
 }
 
+/*****************************************************************************/
+
 inline
 void Wishlist::addWish(Wish const & _wish)
 {
@@ -146,6 +152,8 @@ void Wishlist::addWish(Wish const & _wish)
 	m_wishesOrderedByPriority.push_back(std::make_pair(_wish.second,_wish.first));
 }
 
+/*****************************************************************************/
+
 inline
 bool Wishlist::hasWish(std::string const & _wishName) const
 {
@@ -154,6 +162,8 @@ bool Wishlist::hasWish(std::string const & _wishName) const
 	
 	return m_wishesOrderedByName.find(_wishName) != m_wishesOrderedByName.end();
 }
+
+/*****************************************************************************/
 
 inline
 int Wishlist::getWishPriority(std::string const & _wishName) const
@@ -170,8 +180,10 @@ int Wishlist::getWishPriority(std::string const & _wishName) const
 inline
 int Wishlist::getWishesCount() const
 {
-	return m_wishesOrderedByName.size();
+	return m_wishesOrderedByName.empty() ? 0 : m_wishesOrderedByName.size();
 }
+
+/*****************************************************************************/
 
 inline
 void Wishlist::updateWishPriority(std::string const & _wishName, int _newWishPriority)
@@ -194,6 +206,8 @@ void Wishlist::updateWishPriority(std::string const & _wishName, int _newWishPri
 		}
 }
 
+/*****************************************************************************/
+
 inline
 void Wishlist::clean()
 {
@@ -201,17 +215,17 @@ void Wishlist::clean()
 	m_wishesOrderedByPriority.clear();
 }
 
+/*****************************************************************************/
+
 inline
-Wish & Wishlist::operator[](int _index)
+Wish Wishlist::operator[](int _index) const
 {
 	if (_index < 0 || _index >= m_wishesOrderedByName.size())
 		throw std::out_of_range("");
 
-	int counter = 0;
-	auto it = m_wishesOrderedByName.begin();
-	for (it; counter != _index; it++, counter++);
+	auto pair = m_wishesOrderedByPriority[_index];
 
-	return it->second;
+	return Wish(pair.second, pair.first);
 }
 
 /*****************************************************************************/

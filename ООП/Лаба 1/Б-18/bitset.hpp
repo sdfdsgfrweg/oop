@@ -22,7 +22,7 @@ public:
 
 	Bitset(int _size = 32);
 
-	Bitset(std::string const & _str);
+	Bitset(const char * _str);
 
 	Bitset & operator =(Bitset const & _b);
 
@@ -31,8 +31,6 @@ public:
 	Bitset & operator =(Bitset && _b);
 
 	Bitset(Bitset && _b);
-/*
-	~Bitset();*/
 
 	friend std::ostream & operator << (std::ostream & _s, Bitset const & _set);
 
@@ -64,6 +62,8 @@ public:
 
 private:
 	
+	int getArraySize() const;
+
 	unsigned int * m_bitset;
 	int m_bitsetSize;
 

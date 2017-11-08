@@ -3,118 +3,113 @@
 #include "recipe.hpp"
 #include "messages.hpp"
 
-Recipe::Recipe(std::string const & _name, std::string const & _description,std::string const & _author)
+//----------------------------------------------------------------
+//констуктор по умолчанию
+Recipe::Recipe(
+	std::string const & _nameOfRecipe,
+	std::string const & _descOfRecipe,
+	std::string const & _nameOfAuthor
+)
+//делегирующий конструктор
+	: m_nameOfRecipe ( _nameOfRecipe )
+	, m_descOfRecipe ( _descOfRecipe )
+	, m_nameOfAuthor (_nameOfAuthor )
 {
-	m_name = _name;
-	m_description = _description;
-	m_author = _author;
-
-	if (m_description.empty())
-	{
+	//проверка переменных на корректность
+	if (m_descOfRecipe.empty())
 		throw std::logic_error(Messages::EmptyRecipeDescription);
-	}
 		
-	if (m_name.empty())
-	{
+	if (m_nameOfRecipe.empty())
 		throw std::logic_error(Messages::EmptyRecipeName);
-	}
 		
-	if (m_author.empty())
-	{
+	if (m_nameOfAuthor.empty())
 		throw std::logic_error(Messages::EmptyRecipeAuthor);
-	}
-		
 }
 
+//----------------------------------------------------------------
+//метод возвращающий размер набора ингредиентов
 int Recipe::getIngredientsCount() const
 {
-	return m_ingredients.size();
+	return m_setOfIngredients.size();
 }
 
-void Recipe::addIngredient(std::string const & _ingredient_name, int _w)
+//----------------------------------------------------------------
+//добавление ингредиента
+void Recipe::addIngredient(std::string const & _ing, int _w)
 {
-	auto iterator = m_ingredients.find(_ingredient_name);
-	if (iterator != m_ingredients.end())
-	{
+	if (hasIngredient(_ing))
 		throw std::logic_error(Messages::DuplicateIngredient);
-	}
 		
-	if (_ingredient_name.empty())
-	{
+	if (_ing.empty())
 		throw std::logic_error(Messages::EmptyIngredientName);
-	}
 		
 	if (_w < 1)
-	{
 		throw std::logic_error(Messages::IngredientValueMustBePositive);
-	}
 		
-	m_ingredients.insert(std::make_pair(_ingredient_name, _w));
+	m_setOfIngredients.insert(std::make_pair(_ing, _w));
 }
 
-void Recipe::modifyIngredient(std::string const & _ingredient_name, int _newW)
+//----------------------------------------------------------------
+//изменение веса ингредиента
+void Recipe::modifyIngredient(std::string const & _ing, int _newW)
 {
-	if (_ingredient_name.empty())
-	{
+	if (_ing.empty())
 		throw std::logic_error(Messages::EmptyIngredientName);
-	}
 		
 	if (_newW < 1)
-	{
 		throw std::logic_error(Messages::IngredientValueMustBePositive);
-	}
-		
-	auto iterator = m_ingredients.find(_ingredient_name);
-	if (iterator == m_ingredients.end())
-	{
+
+	if (!hasIngredient(_ing))
 		throw std::logic_error(Messages::IngredientCannotBeFound);
-	}
-		
-	iterator->second = _newW;
+
+	m_setOfIngredients.find(_ing)->second = _newW;
 }
 
-int Recipe::getIngredientValue(std::string const & _ingredient_name) const
+//----------------------------------------------------------------
+//получение веса ингредиента
+int Recipe::getIngredientValue(std::string const & _ing) const
 {
-	if (_ingredient_name.empty())
-	{
+	if (_ing.empty())
 		throw std::logic_error(Messages::EmptyIngredientName);
-	}
 		
-	auto iterator = m_ingredients.find(_ingredient_name);
-	if (iterator == m_ingredients.end())
-	{
+	if (!hasIngredient(_ing))
 		throw std::logic_error(Messages::IngredientCannotBeFound);
-	}
 		
-	return iterator->second;
+	return m_setOfIngredients.find(_ing)->second;
 }
 
+//----------------------------------------------------------------
+//метод возвращающие количество шагов приготовления
 int Recipe::getCookStepsCount() const
 {
-	return m_cook_steps.size();
+	return m_stepsOfCooking.size();
 }
 
+//----------------------------------------------------------------
+//метод возвращающий определенный шаг
 std::string const & Recipe::getCookStep(int _i) const
 {
-	if (_i < 0 || _i >= m_cook_steps.size())
-	{
+	if (_i < 0 || _i >= m_stepsOfCooking.size())
 		throw std::logic_error(Messages::IndexOutOfRange);
-	}
 		
-	return m_cook_steps[_i];
+	return m_stepsOfCooking[_i];
 }
 
-void Recipe::addCookStep(std::string const & _cook_step)
+//----------------------------------------------------------------
+//добавление шага приготовления
+void Recipe::addCookStep(std::string const & _step)
 {
-	if (_cook_step.empty())
-	{
+	if (_step.empty())
 		throw std::logic_error(Messages::EmptyCookStep);
-	}
 		
-	m_cook_steps.push_back(_cook_step);
+	m_stepsOfCooking.push_back(_step);
 }
 
-bool Recipe::hasIngredient(std::string const & _ingredient_name) const
+//----------------------------------------------------------------
+//проверка наличия ингредиента
+bool Recipe::hasIngredient(std::string const & _ing) const
 {
-	return m_ingredients.find(_ingredient_name) != m_ingredients.end();
+	return m_setOfIngredients.find(_ing) != m_setOfIngredients.end();
 }
+
+//----------------------------------------------------------------

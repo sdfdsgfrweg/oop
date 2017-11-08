@@ -1,17 +1,17 @@
 // (C) 2013-2015, Sergei Zaychenko, KNURE, Kharkiv, Ukraine
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #ifndef _MUSICALNOTE_HPP_
 #define _MUSICALNOTE_HPP_
-
+#include<string>
 /*****************************************************************************/
 
-#include <string>
 
 class MusicalNote
 {
-
-/*-----------------------------------------------------------------*/
-
 public:
 
 /*------------------------------------------------------------------*/
@@ -50,89 +50,55 @@ public:
 		Interval_Major_Seventh
 	};
 
+	static const int noteToInterval[];
+
+	static const Note intervalToNote[];
+	
+	static const Sign intervalToSigns[];
+
 /*------------------------------------------------------------------*/
 
-public:
 
-	MusicalNote(
-		Note _note,
-		Sign _sign = Sign::Sign_None
-	);
-	
-	MusicalNote(const std::string & _str);
+	MusicalNote(int _note, int _sign = Sign_None);
 
-	~MusicalNote() = default;
+	MusicalNote(std::string nS);
 
-	Note getNote() const;
+	int getNote()const;
 
-	Sign getSign() const;
+	int getSign()const;
 
-	const char * toString() const;
+	char* toString() const;
 
-	bool operator == (const MusicalNote & _note) const;
+	bool operator ==(MusicalNote _mN);
 
-	bool operator != (const MusicalNote & _note) const;
+	bool operator !=(MusicalNote _mN);
 
-	MusicalNote & operator ++ ();
+	MusicalNote operator ++();
 
-	MusicalNote & operator -- ();
+	MusicalNote operator ++(int);
 
-	MusicalNote operator -- (int);
+	MusicalNote operator --();
 
-	MusicalNote operator ++ (int);
+	MusicalNote operator --(int);
 
-	void operator += (int);
+	MusicalNote operator +=(int _i);
 
-	void operator -= (int);
+	MusicalNote operator -=(int _i);
 
-	Interval operator - (const MusicalNote & _n);
+	int operator -(MusicalNote _mN);
 
 private:
 
-	bool checkMusicalNote(Note _note, Sign _sign) const;
+	int m_interval;
 
-	Note m_note;
-
-	Sign m_sign;
+	int m_note;
+	
+	int m_sign;
 
 /*------------------------------------------------------------------*/
 
 };
 
-inline bool 
-MusicalNote::operator == (const MusicalNote & _note) const
-{
-	int lhs = 0, rhs = 0;
-	if (m_sign == MusicalNote::Sign::Sign_Flat)
-		lhs -= 1;
-	else if (m_sign == MusicalNote::Sign::Sign_Sharp)
-		lhs += 1;
-	if (_note.m_sign == MusicalNote::Sign::Sign_Flat)
-		rhs -= 1;
-	else if (_note.m_sign == MusicalNote::Sign::Sign_Sharp)
-		rhs += 1; 
-	lhs += getNote() * 2;
-	rhs += _note.getNote() * 2;
-	return lhs == rhs;
-}
-
-inline bool 
-MusicalNote::operator != (const MusicalNote & _note) const
-{
-	return !(*this == _note);
-}
-
-inline
-MusicalNote::Note MusicalNote::getNote() const
-{
-	return m_note;
-}
-
-inline
-MusicalNote::Sign MusicalNote::getSign() const
-{
-	return m_sign;
-}
 
 /*****************************************************************************/
 

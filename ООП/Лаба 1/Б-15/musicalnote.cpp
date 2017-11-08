@@ -1,183 +1,217 @@
 // (C) 2013-2015, Sergei Zaychenko, KNURE, Kharkiv, Ukraine
-#define _CRT_SECURE_NO_WARNINGS
+
 #include "musicalnote.hpp"
 
 #include <stdexcept>
 
-/*****************************************************************************/
+const int MusicalNote::noteToInterval[] = { 0, 2, 3 , 5, 7, 8, 10 };
 
-MusicalNote::MusicalNote(
-	Note _note,
-	Sign _sign
-)
-	: m_note(_note)
-	, m_sign(_sign)
+const MusicalNote::Note MusicalNote::intervalToNote[]= { Note_A, Note_A, Note_B, Note_C, Note_C, Note_D, Note_D, Note_E, Note_F, Note_F, Note_G, Note_G };//оприделения static, константний масив значень з enum Note
+
+const MusicalNote::Sign MusicalNote::intervalToSigns[] = { Sign_None, Sign_Sharp, Sign_None, Sign_None, Sign_Sharp ,Sign_None, Sign_Sharp, Sign_None, Sign_None, Sign_Sharp, Sign_None, Sign_Sharp };//оприделения static, константний масив значень з enum Sign
+
+MusicalNote::MusicalNote(int _note, int _sign) 
+	:	m_note(_note)
+	,   m_sign(_sign)
 {
-	checkMusicalNote(m_note, m_sign);
+	if ((_note == 4 && _sign == 1) || (_note == 5 && _sign == 2) 
+		|| (_note == 1 && _sign == 1) || (_note == 2 && _sign == 2))
+		throw std::logic_error("Invalid note");
+
+	m_interval = noteToInterval[_note];
+
+	if (_sign == 1)
+		++m_interval;
+	else if (_sign == 2)
+		--m_interval;
 }
 
-MusicalNote::MusicalNote(const std::string & _str)
+MusicalNote::MusicalNote(std::string _nS)
 {
-	if (_str.empty() || _str.length() > 2)
-		throw std::logic_error("Invalid format");
-
-	if (_str.length() == 2)
-		if (_str[1] == '#' || _str[1] == 'b')
-			if (_str[1] == '#')
-				m_sign = Sign::Sign_Sharp;
-			else
-				m_sign = Sign::Sign_Flat;
-		else
-			throw std::logic_error("Invalid format");
+	if (_nS.size() == 2 && _nS[0] > 64 && _nS[0] < 72 && (_nS[1] == '#' || _nS[1] == 'b'))
+	{
+		m_note = _nS[0] - 'A';
+		if (_nS[1] == '#')
+			m_sign = Sign_Sharp;
+		else if (_nS[1] == 'b')
+			m_sign = Sign_Flat;
+	}
+	else if (_nS.size() == 1 && _nS[0] > 64 && _nS[0] < 72) {
+		m_note = _nS[0] - 'A';
+		m_sign = Sign_None;
+	}
 	else
-		m_sign = Sign::Sign_None;
-
-	switch (_str[0])
-	{
-	case 'A': m_note = Note::Note_A; break;
-	case 'B': m_note = Note::Note_B; break;
-	case 'C': m_note = Note::Note_C; break;
-	case 'D': m_note = Note::Note_D; break;
-	case 'E': m_note = Note::Note_E; break;
-	case 'F': m_note = Note::Note_F; break;
-	case 'G': m_note = Note::Note_G; break;
-	default:
 		throw std::logic_error("Invalid format");
-	}
 
-	checkMusicalNote(m_note, m_sign);
+	m_interval = noteToInterval[m_note];
+	if (m_sign == 1)
+		++m_interval;
+	else if (m_sign == 2)
+		--m_interval;
+
+	if ((m_note == 4 && m_sign == 1) || (m_note == 5 && m_sign == 2) ||
+		(m_note == 1 && m_sign == 1) || (m_note == 2 && m_sign == 2)) 
+		throw std::logic_error("Invalid note");
 }
 
-const char * MusicalNote::toString() const
+int MusicalNote::getNote() const
 {
-	std::string str;
-	char buffer[3];
-	switch (m_note)
-	{
-	case MusicalNote::Note_A: str += 'A'; break;
-	case MusicalNote::Note_B: str += 'B'; break;
-	case MusicalNote::Note_C: str += 'C'; break;
-	case MusicalNote::Note_D: str += 'D'; break;
-	case MusicalNote::Note_E: str += 'E'; break;
-	case MusicalNote::Note_F: str += 'F'; break;
-	case MusicalNote::Note_G: str += 'G'; break;
-	default:
-		break;
-	}
-
-	switch (m_sign)
-	{
-	case MusicalNote::Sign_None: break;
-	case MusicalNote::Sign_Sharp: str += '#'; break;
-	case MusicalNote::Sign_Flat: str += 'b'; break;
-	default:
-		break;
-	}
-	strcpy(buffer, str.c_str());
-	return buffer;
+	return m_note;
 }
 
-MusicalNote & MusicalNote::operator++()
+int MusicalNote::getSign() const
 {
-	switch (m_sign)
-	{
-	case MusicalNote::Sign_None:
-		m_sign = MusicalNote::Sign_Sharp;
-		break;
-	case MusicalNote::Sign_Sharp:
-		m_sign = MusicalNote::Sign_None;
-		if (getNote() == MusicalNote::Note_G)
-			m_note = MusicalNote::Note(MusicalNote::Note_A);
-		else
-			m_note = MusicalNote::Note(getNote() + 1);
-		break;
+	return m_sign;
+}
+
+char* MusicalNote::toString() const
+{
+	char signNew;
+	char noteNew; 
+	noteNew = m_note + 'A';
+
+	if (m_sign == Sign_None)
+		signNew = '0';
+	else if (m_sign == Sign_Sharp)
+		signNew = '#';
+	else if (m_sign == Sign_Flat)
+		signNew = 'b';
+
+	if (signNew != '0') {
+		char *cstr = new char[3];
+		cstr[0] = noteNew;
+		cstr[1] = signNew;
+		cstr[2] = '\0';
+		return cstr;
 	}
-	if (!(checkMusicalNote(m_note, m_sign)))
-		++*this;
+	else {
+		char *cstr = new char[2];
+		cstr[0] = noteNew;
+		cstr[1] = '\0';
+		return cstr;
+	}
+}
+
+bool MusicalNote::operator==(MusicalNote _mN)
+{
+	return m_interval == _mN.m_interval;
+}
+
+bool MusicalNote::operator!=(MusicalNote _mN)
+{
+	return !(*this== _mN);
+}
+
+MusicalNote MusicalNote::operator++()
+{
+	if (m_interval==11) {
+		m_interval = 0;
+		m_note = 0;
+		m_sign = 0;
+		return *this;
+	}
+
+	++m_interval;
+	
+	m_note = intervalToNote[m_interval];
+	m_sign = intervalToSigns[m_interval];
+	
 	return *this;
 }
 
-MusicalNote & MusicalNote::operator--()
+MusicalNote MusicalNote::operator++(int)
 {
-	switch (m_sign)
-	{
-	case MusicalNote::Sign_None:
-		m_sign = MusicalNote::Sign_Sharp;
-		break;
-	case MusicalNote::Sign_Sharp:
-		m_sign = MusicalNote::Sign_None;
-		if (getNote() == MusicalNote::Note_A)
-			m_note = MusicalNote::Note(MusicalNote::Note_G);
-		else
-			m_note = MusicalNote::Note(getNote() - 1);
-		break;
+	MusicalNote New(m_note, m_sign);
+	
+	if (m_interval == 11) {
+		m_interval = 0;
+		m_note = 0;
+		m_sign = 0;
+		return New;
 	}
-	if (!(checkMusicalNote(m_note, m_sign)))
-		--*this;
+	
+	++m_interval;
+	
+	m_note = intervalToNote[m_interval];
+	m_sign = intervalToSigns[m_interval];
+	
+	return New;
+}
+
+MusicalNote MusicalNote::operator--()
+{
+	if (m_interval == 0) {
+		m_interval = 11;
+		m_note = 6;
+		m_sign = 1;
+	
+		return *this;
+	}
+	
+	--m_interval;
+	
+	m_note = intervalToNote[m_interval];
+	m_sign = intervalToSigns[m_interval];
+	
 	return *this;
 }
 
 MusicalNote MusicalNote::operator--(int)
 {
-	MusicalNote note(m_note,m_sign);
-	switch (m_sign)
-	{
-	case MusicalNote::Sign_None:
-		m_sign = MusicalNote::Sign_Sharp;
-		break;
-	case MusicalNote::Sign_Sharp:
-		m_sign = MusicalNote::Sign_None;
-		if (getNote() == MusicalNote::Note_A)
-			m_note = MusicalNote::Note(MusicalNote::Note_G);
-		else
-			m_note = MusicalNote::Note(getNote() - 1);
-		break;
+	MusicalNote New(m_note, m_sign);
+	
+	if (m_interval == 0) {
+		m_interval = 11;
+		m_note = 6;
+		m_sign = 1;
+	
+		return New;
 	}
-	if (!(checkMusicalNote(m_note, m_sign)))
-		++*this;
-	return note;
+
+	--m_interval;
+
+	m_note = intervalToNote[m_interval];
+	m_sign = intervalToSigns[m_interval];
+
+	return New;
 }
 
-MusicalNote MusicalNote::operator++ (int)
+MusicalNote MusicalNote::operator+=(int _i)
 {
-	MusicalNote note(m_note, m_sign);
-	switch (m_sign)
-	{
-	case MusicalNote::Sign_None:
-		m_sign = MusicalNote::Sign_Sharp;
-		break;
-	case MusicalNote::Sign_Sharp:
-		m_sign = MusicalNote::Sign_None;
-		if (getNote() == MusicalNote::Note_G)
-			m_note = MusicalNote::Note(MusicalNote::Note_A);
-		else
-			m_note = MusicalNote::Note(getNote() + 1);
-		break;
+	if ((m_interval + _i) < 12) {
+		m_interval += _i;
+		m_note = intervalToNote[m_interval];
+		m_sign = intervalToSigns[m_interval];
 	}
-	if (!(checkMusicalNote(m_note, m_sign)))
-		++*this;
-	return note;
+	else {
+		m_interval = (m_interval + _i) % 11;
+		m_note = intervalToNote[m_interval];
+		m_sign = intervalToSigns[m_interval];
+	}
+
+	return *this;
 }
 
-void MusicalNote::operator+=(int)
+MusicalNote MusicalNote::operator-=(int _i)
 {
+	if ((m_interval - _i) > 0) {
+		m_interval -= _i;
+		m_note = intervalToNote[m_interval];
+		m_sign = intervalToSigns[m_interval];
+	}
+	else {
+		m_interval = 12-(((m_interval - _i)*-1) % 11);
+		m_note = intervalToNote[m_interval];
+		m_sign = intervalToSigns[m_interval];
+	}
+
+	return *this;
 }
 
-void MusicalNote::operator-=(int)
+int MusicalNote::operator-(MusicalNote _mN)
 {
-}
-
-MusicalNote::Interval MusicalNote::operator -(const MusicalNote & _n)
-{
-	return MusicalNote::Interval::Interval_Fifth;
-}
-
-bool MusicalNote::checkMusicalNote(Note _note, Sign _sign) const
-{
-	if ((_note == MusicalNote::Note::Note_E && _sign == MusicalNote::Sign::Sign_Sharp) ||
-		(_note == MusicalNote::Note::Note_F && _sign == MusicalNote::Sign::Sign_Flat) ||
-		(_note == MusicalNote::Note::Note_B && _sign == MusicalNote::Sign::Sign_Sharp) ||
-		(_note == MusicalNote::Note::Note_C && _sign == MusicalNote::Sign::Sign_Flat))
-		throw std::logic_error("Invalid note");
-	return true;
+	if (m_interval >= _mN.m_interval) 
+		return m_interval - _mN.m_interval;
+	else 
+		return _mN.m_interval - m_interval;
 }

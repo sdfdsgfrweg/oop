@@ -13,222 +13,99 @@
 #include <unordered_map>
 #include <algorithm>
 
-/*****************************************************************************/
-
-	typedef
-	std::pair< std::string, int >
-	Wish;
-
-/*****************************************************************************/
-
+typedef std::pair< std::string, int > Wish;
 
 class Wishlist
 {
 
-/*-----------------------------------------------------------------*/
-
 public:
 
-/*-----------------------------------------------------------------*/
-	
-	Wishlist(std::string const & _ownerName);
-
-	Wishlist(
-		std::string const & _ownerName,
-		std::initializer_list<Wish> _wishes	
-	);
-
-	Wishlist(
-		std::string const & _ownerName,
-		std::vector<Wish> & _wishes
-	);
-
+	Wishlist(std::string const & _name);
+	Wishlist(std::string const & _name,std::initializer_list<Wish> _wishes);
+	Wishlist(std::string const & _name,std::vector<Wish> & _wishes);
 	Wishlist(Wishlist && _wish);
-
 	std::string const & getOwner() const;
-
 	void correctOwner(std::string const & _correctOwnerName);
-
-	void addWish(std::string const & _wishName, int _wishPriority);
-
+	void addWish(std::string const & _wish, int _wishPriority);
 	void addWish(Wish const & _wish);
-
-	bool hasWish(std::string const & _wishName) const;
-
-	int getWishPriority(std::string const & _wishName) const;
-
+	bool hasWish(std::string const & _wish) const;
+	int getWishPriority(std::string const & _wish) const;
 	int getWishesCount() const;
-
-	void updateWishPriority(std::string const & _wishName, int _newWishPriority);
-
+	void updateWishPriority(std::string const & _wish, int _newWishPriority);
 	void clean();
-
 	void operator += (const Wish & _wish);
-
 	Wish operator[](int _index) const;
-
 	std::vector<std::string> getWishesWithPriority(int _wishesPriority) const;
-
 	std::vector<std::string> getMostPrioritizedWishes(int _wishesNumber) const;
-
 	std::vector<std::string> getLeastPrioritizedWishes(int _wishesNumber) const;
-
 	std::set<std::string> getSimilarWishes(const Wishlist & _wish) const;
-
-	void dropWish(std::string const & _wishName);
-
+	void dropWish(std::string const & _wish);
 	void dropWishesWithPriorityLessThan(int _wishPriority);
-
-
-/*-----------------------------------------------------------------*/
 
 private:
 
-/*-----------------------------------------------------------------*/
-
-	std::string m_ownerName;
-
-	std::unordered_map<std::string, Wish> m_wishesOrderedByName;
-
-	std::vector<std::pair<int, std::string>> m_wishesOrderedByPriority;
-
-/*-----------------------------------------------------------------*/
+	std::vector<std::pair<int, std::string>> Registration;
+	std::string m_name;
+	std::unordered_map<std::string, Wish> Wishes;
 
 };
 
-
-/*****************************************************************************/
-
-inline
-std::string const & Wishlist::getOwner() const
+inline std::string const & Wishlist::getOwner() const
 {
-	return m_ownerName;
+	return m_name;
 }
 
-/*****************************************************************************/
-
-inline
-void Wishlist::correctOwner(std::string const & _correctOwnerName)
+inline void Wishlist::correctOwner(std::string const & _correctOwnerName)
 {
 	if (_correctOwnerName.empty())
+	{
 		throw std::logic_error(Messages::OwnerNameEmpty);
-
-	m_ownerName = _correctOwnerName;
+	}
+		
+	m_name = _correctOwnerName;
 }
 
-/*****************************************************************************/
-
-inline
-void Wishlist::addWish(std::string const & _wishName, int _wishPriority)
+inline bool Wishlist::hasWish(std::string const & _wish) const
 {
-	if (_wishName.empty())
+	if (_wish.empty())
+	{
 		throw std::logic_error(Messages::WishNameEmpty);
-
-	if (m_wishesOrderedByName.find(_wishName) != m_wishesOrderedByName.end())
-		throw std::logic_error(Messages::WishAlreadyExists);
-
-	if (_wishPriority < 0)
-		throw std::logic_error(Messages::NegativePriority);
-
-	m_wishesOrderedByName.insert(std::make_pair(_wishName, std::make_pair(_wishName, _wishPriority)));
-	m_wishesOrderedByPriority.push_back(std::make_pair(_wishPriority,_wishName));
-}
-
-/*****************************************************************************/
-
-inline
-void Wishlist::addWish(Wish const & _wish)
-{
-	if (_wish.first.empty())
-		throw std::logic_error(Messages::WishNameEmpty);
-
-	if (m_wishesOrderedByName.find(_wish.first) != m_wishesOrderedByName.end())
-		throw std::logic_error(Messages::WishAlreadyExists);
-
-	if (_wish.second < 0)
-		throw std::logic_error(Messages::NegativePriority);
-
-	m_wishesOrderedByName.insert(std::make_pair(_wish.first, Wish(_wish.first, _wish.second)));
-	m_wishesOrderedByPriority.push_back(std::make_pair(_wish.second,_wish.first));
-}
-
-/*****************************************************************************/
-
-inline
-bool Wishlist::hasWish(std::string const & _wishName) const
-{
-	if (_wishName.empty())
-		throw std::logic_error(Messages::WishNameEmpty);
+	}
 	
-	return m_wishesOrderedByName.find(_wishName) != m_wishesOrderedByName.end();
+	auto it = Wishes.find(_wish);
+	return	it != Wishes.end();
 }
 
-/*****************************************************************************/
-
-inline
-int Wishlist::getWishPriority(std::string const & _wishName) const
+inline int Wishlist::getWishPriority(std::string const & _wish) const
 {
-	if (_wishName.empty())
+	if (_wish.empty())
+	{
 		throw std::logic_error(Messages::WishNameEmpty);
-
-	if (m_wishesOrderedByName.find(_wishName) == m_wishesOrderedByName.end())
+	}
+		
+	if (!hasWish(_wish))
+	{
 		throw std::logic_error(Messages::WishDoesNotExist);
-
-	return m_wishesOrderedByName.find(_wishName)->second.second;
+	}
+		
+	auto it = Wishes.find(_wish);
+	return it->second.second;
 }
 
-inline
-int Wishlist::getWishesCount() const
+inline int Wishlist::getWishesCount() const
 {
-	return m_wishesOrderedByName.empty() ? 0 : m_wishesOrderedByName.size();
+	if (Wishes.empty())
+		return 0;
+	else
+		return Wishes.size();
 }
 
-/*****************************************************************************/
-
-inline
-void Wishlist::updateWishPriority(std::string const & _wishName, int _newWishPriority)
+inline void Wishlist::clean()
 {
-	if (_wishName.empty())
-		throw std::logic_error(Messages::WishNameEmpty);
-
-	if (m_wishesOrderedByName.find(_wishName) == m_wishesOrderedByName.end())
-		throw std::logic_error(Messages::WishDoesNotExist);
-
-	if (_newWishPriority < 0)
-		throw std::logic_error(Messages::NegativePriority);
-
-	m_wishesOrderedByName.find(_wishName)->second.second = _newWishPriority;
-	for (int i = 0; i < m_wishesOrderedByPriority.size(); i++)
-		if (m_wishesOrderedByPriority[i].second == _wishName)
-		{
-			m_wishesOrderedByPriority[i].first = _newWishPriority;
-			break;
-		}
+	Wishes.clear();
+	Registration.clear();
 }
 
-/*****************************************************************************/
-
-inline
-void Wishlist::clean()
-{
-	m_wishesOrderedByName.clear();
-	m_wishesOrderedByPriority.clear();
-}
-
-/*****************************************************************************/
-
-inline
-Wish Wishlist::operator[](int _index) const
-{
-	if (_index < 0 || _index >= m_wishesOrderedByName.size())
-		throw std::out_of_range("");
-
-	auto pair = m_wishesOrderedByPriority[_index];
-
-	return Wish(pair.second, pair.first);
-}
-
-/*****************************************************************************/
 
 
 #endif // _WISHLIST_HPP_

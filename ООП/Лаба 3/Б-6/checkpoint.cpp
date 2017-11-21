@@ -2,14 +2,5 @@
 
 #include "checkpoint.hpp"
 
-/*****************************************************************************/
-
-Checkpoint::Checkpoint(
-	std::string const & _name,
-	int _mark
-)
-	: m_name(_name)
-	, m_maxMark(_mark)
+Checkpoint::Checkpoint(std::string const & _Name,int _Mark) : Name(_Name) , MaximalMark(_Mark)
 {}
-
-/*****************************************************************************/

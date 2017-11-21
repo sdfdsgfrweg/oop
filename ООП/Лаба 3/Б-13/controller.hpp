@@ -10,9 +10,12 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
+#include <memory>
 
 /*****************************************************************************/
 
+class User;
+class Document;
 
 class Controller
 {
@@ -106,12 +109,10 @@ public:
 private:
 
 /*-----------------------------------------------------------------*/
+	
+	std::unordered_map<std::string, std::unique_ptr<User>> m_users;
 
-    // TODO: place private methods here
-
-/*-----------------------------------------------------------------*/
-
-    // TODO: place private fields here
+	std::unordered_map<int, std::unique_ptr<Document>> m_documents;
 
 /*-----------------------------------------------------------------*/  
 

@@ -12,6 +12,8 @@
 DECLARE_OOP_TEST(progression_test_DefaultConstructor)
 {
 	ArithmeticProgression p;
+
+	p.
 	assert(p.getInitialValue() == 0);
 	assert(p.getStep() == 1);
 }

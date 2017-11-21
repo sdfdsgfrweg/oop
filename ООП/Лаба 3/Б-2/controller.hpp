@@ -7,9 +7,14 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <set>
+#include <memory>
+#include <algorithm>
 
 /*****************************************************************************/
 
+class Lecture;
 
 class Controller
 {
@@ -70,14 +75,7 @@ public:
 
 private:
 
-
-/*-----------------------------------------------------------------*/
-
-    // TODO: place private methods here
-
-/*-----------------------------------------------------------------*/
-
-    // TODO: place private fields here
+	std::unordered_map<std::string, std::unique_ptr<Lecture>> m_lecture;
 
 /*-----------------------------------------------------------------*/
 

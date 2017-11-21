@@ -55,8 +55,6 @@ bool Controller::hasProjectDocument(std::string const & _projectName,std::string
 	return m_projects.find(_projectName)->second->hasDocument(_documentName);
 }
 
-/*****************************************************************************/
-
 std::string const & Controller::getProjectDocumentStandard(std::string const & _projectName,std::string const & _documentName) const
 {
 	if (!hasProject(_projectName))
@@ -66,8 +64,6 @@ std::string const & Controller::getProjectDocumentStandard(std::string const & _
 		
 	return m_projects.find(_projectName)->second->getDocument(_documentName).getStandart();
 }
-
-/*****************************************************************************/
 
 void Controller::addDocumentForProject(std::string const & _projectName,std::string const & _documentName,std::string const & _standardName)
 {
@@ -152,91 +148,98 @@ Controller::StandardNames Controller::getProjectStandardsUsed() const
 	return result;
 }
 
-/*****************************************************************************/
-
 Controller::ProjectNames Controller::getProjectsWithAllNeededStandardDocuments() const
 {
 	ProjectNames result;
 	bool hasAllStandarts;
 
-	for (auto it = m_projects.begin(); it != m_projects.end(); ++it)
+	for (auto const & p : m_projects)
 	{
 		hasAllStandarts = true;
 		
-		it->second->forEachDocument(
-			[&](std::string const & _name,
-				std::string const & _st)
+		auto const & docs = p.second->getDocuments();
+		for (auto const & d : docs)
 		{
-			if (it->second->getStandartsCount() != 0 && !it->second->hasStandart(_st))
+			if (p.second->getStandardsSize() != 0 && !p.second->hasStandard(d.second->getStandart()))
+			{
 				hasAllStandarts = false;
-		});
-		if (hasAllStandarts)
-			result.insert(it->first);
+			}
+		}
+			
+		if (hasAllStandarts) 
+		{
+			result.insert(p.first);
+		}
 	};
 
 	return result;
 }
-
-/*****************************************************************************/
 
 Controller::ProjectNames Controller::getProjectsNotHavingStandardDocument(std::string const & _standard) const
 {
 	ProjectNames result;
-	for (auto it = m_projects.begin(); it != m_projects.end(); ++it)
+	for (auto const & p : m_projects)
 	{
-		if (it->second->hasStandart(_standard))
+		if (p.second->hasStandard(_standard))
 		{
-			it->second->forEachDocument(
-				[&](std::string const & _name,
-					std::string const & _st)
+			auto const & docs = p.second->getDocuments();
+			for (auto const & d : docs)
 			{
-				if (_st.empty())
+				if (d.second->getStandart().empty())
 				{
-					result.insert(it->first);
-					return;
+					result.insert(p.first);
+					break;
 				}
-			});
+			}
 		}
 		else
-			result.insert(it->first);
+		{
+			result.insert(p.first);
+		}
 	};
 
 	return result;
 }
 
-/*****************************************************************************/
-
 std::string Controller::getMostPopularStandard() const
 {
 	std::map<int, std::string, std::greater<int>> standards;
-	int max = 0, count = 0;
+	bool isBreaked;
 
-	for (auto it = m_projects.begin(); it != m_projects.end(); ++it)
-		it->second->forEachStandart(
-			[&](std::string const & _s)
+	for (auto const & p : m_projects)
 	{
-		standards.insert(std::make_pair(0, _s));
+		auto const & stand = p.second->getStandards();
+		for (auto const & s : stand)
+		{
+			standards.insert(std::make_pair(0, s));
+		}
 	}
-		);
 
-	for (auto it = m_projects.begin(); it != m_projects.end(); ++it)
-		it->second->forEachDocument(
-			[&](std::string const & _name,
-				std::string const & _st)
+	for (auto const & p : m_projects)
 	{
-		int current = 0;
-		auto copy = standards;
-		for (auto s : copy)
-			if (s.second == _st)
+		auto const & docs = p.second->getDocuments();
+		for (auto const & d : docs)
+		{
+			isBreaked = false;
+			int curr = 0;
+			auto c = standards;
+			for (auto s : c)
 			{
-				current = s.first;
-				standards.erase(current);
-				standards.insert(std::make_pair(current++, s.second));
-				return;
+				if (s.second == d.second->getStandart())
+				{
+					curr = s.first;
+					standards.erase(curr);
+					standards.insert(std::make_pair(curr++, s.second));
+					isBreaked = true;
+					break;
+				}
 			}
-	});
+			if (isBreaked)
+			{
+				break;
+			}
+		}
+	}
 
 	return standards.begin()->second;
 }
-
-/*****************************************************************************/

@@ -12,6 +12,7 @@
 class ArithmeticProgression
 {
 public:
+
 	ArithmeticProgression();
 
 	ArithmeticProgression(int _value, int _step = 1);
@@ -74,7 +75,7 @@ bool ArithmeticProgression::operator==(const ArithmeticProgression & _prog) cons
 inline
 bool ArithmeticProgression::operator!=(const ArithmeticProgression & _prog) const 
 {
-	return !(_prog.m_progressionStep == m_progressionStep && _prog.m_startValue == m_startValue);
+	return !(*this == _prog);
 }
 
 /*****************************************************************************/

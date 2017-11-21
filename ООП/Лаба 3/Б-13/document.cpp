@@ -2,8 +2,11 @@
 
 #include "document.hpp"
 
-/*****************************************************************************/
-
-// TODO implement your methods here
-
-/*****************************************************************************/   
+Document::Document(int _ID,std::string const & _name,std::string const & _path,OwnershipRights _rights
+)
+{
+	ID = _ID;
+	Name = _name;
+	Path = _path;
+	Rights = _rights;
+}

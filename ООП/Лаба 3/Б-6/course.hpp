@@ -3,11 +3,7 @@
 #ifndef _COURSE_HPP_
 #define _COURSE_HPP_
 
-/*****************************************************************************/
-
 class Checkpoint;
-
-/*****************************************************************************/
 
 #include "controlform.hpp"
 
@@ -18,82 +14,52 @@ class Checkpoint;
 
 class Course
 {
+	std::unordered_map<std::string, std::unique_ptr<Checkpoint> > Checkpoints;
 
-	/*-----------------------------------------------------------------*/
+	std::string Name;
+	
+	ControlForm Form;
+	
 
 public:
 
-	/*-----------------------------------------------------------------*/
-
 	Course(
-		std::string const & _courseName,
-		ControlForm _form
+		std::string const & _Name,
+		ControlForm _Form
 	);
 
 	~Course() = default;
 
-	void addCheckpoint(std::unique_ptr<Checkpoint> _c);
+	std::string const & getName() const
+	{
+		return Name;
+	}
 
-	std::string const & getCourseName() const;
+	ControlForm getControlForm() const
+	{
+		return Form;
+	}
 
-	ControlForm getCourseControlForm() const;
+	bool hasCheckpoints() const
+	{
+		return !Checkpoints.empty();
+	}
 
-	bool hasCheckpoints() const;
+	bool hasCheckpoint(std::string const & _c) const
+	{
+		return Checkpoints.find(_c) != Checkpoints.end();
+	}
 
-	bool hasCheckpoint(std::string const & _c) const;
-
-	void forEachCheckpoint(std::function<void(Checkpoint const &)> _f) const;
-
-	Checkpoint & getCheckpoint(std::string const & _c) const;
+	Checkpoint & getCheckpoint(std::string const & _c) const
+	{
+		return *Checkpoints.find(_c)->second.get();
+	}
 
 	int getCheckpointSum() const;
 
-	/*-----------------------------------------------------------------*/
+	void forEachCheckpoint(std::function<void(Checkpoint const &)> _f) const;
 
-private:
-
-	/*-----------------------------------------------------------------*/
-
-	std::string m_courseName;
-	ControlForm m_form;
-	std::unordered_map<std::string,std::unique_ptr<Checkpoint> > m_checkpoints;
-
-	/*-----------------------------------------------------------------*/
+	void addCheckpoint(std::unique_ptr<Checkpoint> _c);
 };
-
-/*****************************************************************************/
-
-inline
-std::string const &
-Course::getCourseName() const
-{
-	return m_courseName;
-}
-
-/*****************************************************************************/
-
-inline
-ControlForm Course::getCourseControlForm() const
-{
-	return m_form;
-}
-
-/*****************************************************************************/
-
-inline
-bool Course::hasCheckpoints() const
-{
-	return !m_checkpoints.empty();
-}
-
-/*****************************************************************************/
-
-inline
-Checkpoint & Course::getCheckpoint(std::string const & _c) const
-{
-	return *m_checkpoints.find(_c)->second.get();
-}
-
-/*****************************************************************************/
 
 #endif // _COURSE_HPP_

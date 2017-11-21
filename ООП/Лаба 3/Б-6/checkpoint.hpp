@@ -2,75 +2,37 @@
 
 #ifndef _CHECKPOINT_HPP_
 #define _CHECKPOINT_HPP_
-
-/*****************************************************************************/
+#include <string>
 
 class Course;
 
-/*****************************************************************************/
-
-#include <string>
-
 class Checkpoint
 {
+	std::string Name;
 
-	/*-----------------------------------------------------------------*/
+	int MaximalMark;
 
 public:
 
-	/*-----------------------------------------------------------------*/
-
-	Checkpoint(
-		std::string const & _name,
-		int _mark
-	);
+	Checkpoint(std::string const & _Name,int _Mark);
 
 	~Checkpoint() = default;
 
-	std::string const & getName() const;
+	std::string const & getName() const 
+	{
+		return Name;
+	}
 
-	int getMark() const;
+	int getMark() const 
+	{
+		return MaximalMark;
+	}
 
-	bool operator < (Checkpoint const & _c) const;
-
-	/*-----------------------------------------------------------------*/
-
-private:
-
-	/*-----------------------------------------------------------------*/
-
-	std::string m_name;
-	int m_maxMark;
-
-	/*-----------------------------------------------------------------*/
+	bool operator < (Checkpoint const & _c) const
+	{
+		return Name < _c.Name;
+	}
 
 };
-
-/*****************************************************************************/
-
-inline
-std::string const & 
-Checkpoint::getName() const
-{
-	return m_name;
-}
-
-/*****************************************************************************/
-
-inline
-int Checkpoint::getMark() const
-{
-	return m_maxMark;
-}
-
-/*****************************************************************************/
-
-inline
-bool Checkpoint::operator < (Checkpoint const & _c) const
-{
-	return m_name < _c.m_name;
-}
-
-/*****************************************************************************/
 
 #endif // _CHECKPOINT_HPP_

@@ -3,16 +3,12 @@
 #ifndef _CONTROLLER_HPP_
 #define _CONTROLLER_HPP_
 
-/*****************************************************************************/
-
-#include "controlform.hpp"
-
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <memory>
 
-/*****************************************************************************/
+#include "controlform.hpp"
 
 class Checkpoint;
 class Student;
@@ -20,12 +16,11 @@ class Course;
 
 class Controller
 {
+	std::unordered_map < std::string, std::unique_ptr<Course> > Courses;
 
-	/*-----------------------------------------------------------------*/
+	std::unordered_map < std::string, std::unique_ptr<Student> > Students;
 
 public:
-
-	/*-----------------------------------------------------------------*/
 
 	Controller();
 
@@ -92,18 +87,6 @@ public:
 	std::string getStudentWithBestAverageScore() const;
 
 	/*-----------------------------------------------------------------*/
-
-private:
-
-	/*-----------------------------------------------------------------*/
-
-	std::unordered_map < std::string, std::unique_ptr<Course> > m_courses;
-	std::unordered_map < std::string, std::unique_ptr<Student> > m_students;
-	
-	/*-----------------------------------------------------------------*/
 };
-
-
-/*****************************************************************************/
 
 #endif // _CONTROLLER_HPP_

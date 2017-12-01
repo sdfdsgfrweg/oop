@@ -2,20 +2,10 @@
 
 #include "document.hpp"
 
-Document::Document(
-	std::string const & _Name,
-	std::string const & _Standard
-)
-	: Name(_Name)
-	, Standard(_Standard)
+//---------------------------------------------------------------------------------
+
+Document::Document(std::string const & _name,std::string const & _standard)
+	: m_name(_name) , m_standard(_standard)
 {}
 
-std::string const & Document::getName() const
-{
-	return Name;
-}
-
-std::string const & Document::getStandart() const
-{
-	return Standard;
-}
+//---------------------------------------------------------------------------------

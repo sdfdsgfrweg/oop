@@ -131,10 +131,14 @@ void Controller::addMovieActor(std::string const & _movieTitle, std::string cons
 		throw std::logic_error(Messages::MovieActorAlreadyAdded);
 
 	m_movies.find(_movieTitle)->second->addActor(*m_actors.find(_actorName)->second.get());
+	m_actors.find(_actorName)->second->addMovie(*m_movies.find(_movieTitle)->second.get());
 }
 
 std::vector<std::string> Controller::getMovieActors(std::string const & _movieTitle) const
 {
+	if (m_movies.find(_movieTitle) == m_movies.end())
+		throw std::logic_error(Messages::MovieUnresolved);
+
 	std::vector<std::string> actors;
 
 	m_movies.find(_movieTitle)->second->forEachActor(

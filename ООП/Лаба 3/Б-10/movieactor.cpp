@@ -6,10 +6,6 @@
 
 /*****************************************************************************/
 
-// TODO implement your methods here
-
-/*****************************************************************************/
-
 MovieActor::MovieActor(
 	std::string const & _name,
 	int _year
@@ -18,15 +14,21 @@ MovieActor::MovieActor(
 	, m_year(_year)
 {}
 
+/*****************************************************************************/
+
 bool MovieActor::hasMovie(std::string const & _m) const
 {
 	return m_movies.find(_m) != m_movies.end();
 }
 
+/*****************************************************************************/
+
 void MovieActor::removeMovie(std::string const & _m)
 {
 	m_movies.erase(_m);
 }
+
+/*****************************************************************************/
 
 void MovieActor::forEachMovie(std::function<void(Movie const&_m)> _f) const
 {
@@ -34,7 +36,11 @@ void MovieActor::forEachMovie(std::function<void(Movie const&_m)> _f) const
 		_f(*m.second);
 }
 
+/*****************************************************************************/
+
 void MovieActor::addMovie(Movie const & _m)
 {
 	m_movies.insert(std::make_pair(_m.getName(), &_m));
 }
+
+/*****************************************************************************/

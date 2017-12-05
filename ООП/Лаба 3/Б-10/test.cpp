@@ -461,6 +461,7 @@ DECLARE_OOP_TEST ( test_actor_average_rating )
 	c.addMovieActor( "Fightclub", "Brad Pitt" );
 
 	assert( c.getActorAverageRating( "Brad Pitt" ) == 8.5 );
+
 	assert( c.getActorAverageRating( "Lazy Bastard" ) == 0.0 );
 }
 

@@ -9,13 +9,13 @@
 
 /*****************************************************************************/
 
-// TODO implement controller methods here
+Controller::Controller() = default;
 
 /*****************************************************************************/
 
-Controller::Controller() = default;
-
 Controller::~Controller() = default;
+
+/*****************************************************************************/
 
 void Controller::createActor(std::string const & _actorName, int _birthYear)
 {
@@ -32,6 +32,8 @@ void Controller::createActor(std::string const & _actorName, int _birthYear)
 
 }
 
+/*****************************************************************************/
+
 int Controller::getActorBirthYear(std::string const & _actorName) const
 {
 	if (m_actors.find(_actorName) == m_actors.end())
@@ -39,6 +41,8 @@ int Controller::getActorBirthYear(std::string const & _actorName) const
 
 	return m_actors.find(_actorName)->second->getYear();
 }
+
+/*****************************************************************************/
 
 void Controller::createMovie(std::string const & _movieTitle, int _productionYear, int _rating)
 {
@@ -57,6 +61,8 @@ void Controller::createMovie(std::string const & _movieTitle, int _productionYea
 	m_movies.insert(std::make_pair(_movieTitle, std::make_unique<Movie>(_movieTitle, _productionYear, _rating)));
 }
 
+/*****************************************************************************/
+
 int Controller::getMovieProductionYear(std::string const & _movieTitle) const
 {
 	if (m_movies.find(_movieTitle) == m_movies.end())
@@ -65,6 +71,8 @@ int Controller::getMovieProductionYear(std::string const & _movieTitle) const
 	return m_movies.find(_movieTitle)->second->getYear();
 }
 
+/*****************************************************************************/
+
 int Controller::getMovieRating(std::string const & _movieTitle) const
 {
 	if (m_movies.find(_movieTitle) == m_movies.end())
@@ -72,6 +80,8 @@ int Controller::getMovieRating(std::string const & _movieTitle) const
 
 	return m_movies.find(_movieTitle)->second->getRate();
 }
+
+/*****************************************************************************/
 
 void Controller::addMovieGenre(std::string const & _movieTitle, std::string const & _genre)
 {
@@ -86,6 +96,8 @@ void Controller::addMovieGenre(std::string const & _movieTitle, std::string cons
 
 	m_movies.find(_movieTitle)->second->addGenre(_genre);
 }
+
+/*****************************************************************************/
 
 std::vector<std::string> Controller::getMovieGenres(std::string const & _movieTitle) const
 {
@@ -103,6 +115,8 @@ std::vector<std::string> Controller::getMovieGenres(std::string const & _movieTi
 	return genres;
 }
 
+/*****************************************************************************/
+
 std::vector<std::string> Controller::getGenreMovies(std::string const & _genre) const
 {
 	if (_genre.empty())
@@ -119,6 +133,8 @@ std::vector<std::string> Controller::getGenreMovies(std::string const & _genre) 
 	return movies;
 }
 
+/*****************************************************************************/
+
 void Controller::addMovieActor(std::string const & _movieTitle, std::string const & _actorName)
 {
 	if (m_movies.find(_movieTitle) == m_movies.end())
@@ -133,6 +149,8 @@ void Controller::addMovieActor(std::string const & _movieTitle, std::string cons
 	m_movies.find(_movieTitle)->second->addActor(*m_actors.find(_actorName)->second.get());
 	m_actors.find(_actorName)->second->addMovie(*m_movies.find(_movieTitle)->second.get());
 }
+
+/*****************************************************************************/
 
 std::vector<std::string> Controller::getMovieActors(std::string const & _movieTitle) const
 {
@@ -152,6 +170,8 @@ std::vector<std::string> Controller::getMovieActors(std::string const & _movieTi
 	return actors;
 }
 
+/*****************************************************************************/
+
 std::vector<std::string> Controller::getActorMovies(std::string const & _actorName) const
 {
 	if (m_actors.find(_actorName) == m_actors.end())
@@ -170,6 +190,8 @@ std::vector<std::string> Controller::getActorMovies(std::string const & _actorNa
 	return movies;
 }
 
+/*****************************************************************************/
+
 std::string Controller::getOldestMovieOfGenre(std::string const & _genre) const
 {
 	if (_genre.empty())
@@ -179,19 +201,22 @@ std::string Controller::getOldestMovieOfGenre(std::string const & _genre) const
 	int min = 2017;
 
 	for (auto const & m : m_movies)
-		if (m.second->getYear() < min)
-		{
-			min = m.second->getYear();
-			oldestGenreMovie = m.first;
-		}
+		if (m.second->hasGenre(_genre))
+			if (m.second->getYear() < min)
+			{
+				min = m.second->getYear();
+				oldestGenreMovie = m.first;
+			}
 
 
 	return oldestGenreMovie;
 }
 
+/*****************************************************************************/
+
 double Controller::getActorAverageRating(std::string const & _actorName) const
 {
-	int totalRating = 0.0, filmCount = 0;
+	double totalRating = 0.0, filmCount = 0;
 
 	if (m_actors.find(_actorName) == m_actors.end())
 		throw std::logic_error(Messages::ActorUnresolved);
@@ -203,8 +228,10 @@ double Controller::getActorAverageRating(std::string const & _actorName) const
 			filmCount++;
 		}
 
-	return totalRating / filmCount;
+	return filmCount == 0 ? 0.0 : totalRating / filmCount;
 }
+
+/*****************************************************************************/
 
 std::vector<std::string> Controller::getActorsThatNeverPlayedInGenre(std::string const & _genre) const
 {
@@ -235,6 +262,8 @@ std::vector<std::string> Controller::getActorsThatNeverPlayedInGenre(std::string
 	return actors;
 }
 
+/*****************************************************************************/
+
 std::vector<std::string> Controller::getMoviesWhenActorWasYoungerThan(std::string const & _actorName, int _age) const
 {
 	if (m_actors.find(_actorName) == m_actors.end())
@@ -247,10 +276,12 @@ std::vector<std::string> Controller::getMoviesWhenActorWasYoungerThan(std::strin
 	
 	for (auto const & m : m_movies)
 		if (m.second->hasActor(_actorName))
-			if ((2017 - m_actors.find(_actorName)->second->getYear()) < _age)
+			if ((m.second->getYear() - m_actors.find(_actorName)->second->getYear()) < _age)
 				movies.push_back(m.first);
 
 	std::sort(movies.begin(), movies.end());
 
 	return movies;
 }
+
+/*****************************************************************************/

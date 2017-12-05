@@ -60,11 +60,15 @@ private:
 
 };
 
+/*****************************************************************************/
+
 inline
 int MovieActor::getYear() const
 {
 	return m_year;
 }
+
+/*****************************************************************************/
 
 inline
 std::string const & MovieActor::getName() const
